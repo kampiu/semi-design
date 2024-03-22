@@ -8,7 +8,7 @@ import '@douyinfe/semi-foundation/badge/badge.scss';
 
 const prefixCls = cssClasses.PREFIX;
 
-export type BadgeType = 'primary' | 'secondary' | 'tertiary' | 'danger' | 'warning';
+export type BadgeType = 'primary' | 'secondary' | 'tertiary' | 'danger' | 'warning' | 'success';
 export type BadgeTheme = 'solid' | 'light' | 'inverted';
 export type BadgePosition = 'leftTop' | 'leftBottom' | 'rightTop' | 'rightBottom';
 
@@ -60,7 +60,6 @@ export default class Badge extends PureComponent<BadgeProps> {
         const { direction } = this.context;
         // DefaultPosition here, static can't get this
         const defaultPosition = direction === 'rtl' ? 'leftTop' : 'rightTop';
-        // eslint-disable-next-line max-len
         const { count, dot, type, theme, position = defaultPosition, overflowCount, style, children, className, ...rest } = this.props;
         const custom = count && !(isNumber(count) || isString(count));
         const showBadge = count !== null && typeof count !== 'undefined';

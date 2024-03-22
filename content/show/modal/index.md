@@ -58,6 +58,52 @@ import { Modal, Button } from '@douyinfe/semi-ui';
 };
 ```
 
+### 底部撑满
+
+设置 footerFill 为 true 可使 Modal footer 底部按钮撑满排列
+
+```jsx live=true
+import React from 'react';
+import { Modal, Button } from '@douyinfe/semi-ui';
+
+() => {
+    const [visible, setVisible] = useState(false);
+    const showDialog = () => {
+        setVisible(true);
+    };
+    const handleOk = () => {
+        setVisible(false);
+        console.log('Ok button clicked');
+    };
+    const handleCancel = () => {
+        setVisible(false);
+        console.log('Cancel button clicked');
+    };
+    const handleAfterClose = () => {
+        console.log('After Close callback executed');
+    };
+
+    return (
+        <>
+            <Button onClick={showDialog}>打开弹窗</Button>
+            <Modal
+                title="基本对话框"
+                visible={visible}
+                onOk={handleOk}
+                afterClose={handleAfterClose} //>=1.16.0
+                onCancel={handleCancel}
+                closeOnEsc={true}
+                footerFill={true}
+            >
+                This is the content of a basic modal.
+                <br />
+                More content...
+            </Modal>
+        </>
+    );
+};
+```
+
 ### 点击遮罩层不可关闭
 
 修改 `maskClosable` 为 `false` 则不可通过点击遮罩层来关闭对话框。
@@ -584,12 +630,12 @@ function Demo(props = {}) {
 | content | 对话框内容                                                                                                     | ReactNode | 无 |
 | footer | 对话框底部                                                                                                     | ReactNode | 无 |
 | fullScreen | 对话是否是全屏（会覆盖 width height） <br/>**v1.18.0 后提供**                                                            | boolean | false |
-| getPopupContainer | 指定父级 DOM，弹层将会渲染至该 DOM 中，自定义需要设置 `position: relative` <br/>**v0.33.0 后提供**                                 | () => HTMLElement | () => document.body |
+| getPopupContainer | 指定父级 DOM，弹层将会渲染至该 DOM 中，自定义需要设置 `position: relative` 这会改变浮层 DOM 树位置，但不会改变视图渲染位置。  <br/>**v0.33.0 后提供**                                | () => HTMLElement | () => document.body |
 | hasCancel | 是否显示取消按钮                                                                                                  | boolean | true |
 | header | 对话框头部                                                                                                     | ReactNode | 无 |
 | height | 高度                                                                                                        | number | 无 |
 | icon | 自定义 icon <br/>**v1.1.0 后提供**                                                                              | ReactNode | - |
-| keepDOM | 关闭对话框时是否保留内部组件不销毁 <br/>**v1.0.0 后提供**                                                                            | boolean | false |
+| keepDOM | 关闭对话框时是否保留内部组件不销毁 <br/>**v1.0.0 后提供**                                                                     | boolean | false |
 | lazyRender | 配合 keepDOM 使用，为 true 时挂载时不会渲染对话框组件 <br/>**v1.0.0 后提供**                                                    | boolean | true |
 | mask | 是否显示遮罩                                                                                                    | boolean | true |
 | maskClosable | 是否允许通过点击遮罩来关闭对话框                                                                                          | boolean | true |
@@ -627,6 +673,7 @@ function Demo(props = {}) {
 | confirmLoading | 确认按钮 loading | boolean | false |
 | content | 对话框内容 | ReactNode | 无 |
 | footer | 对话框底部 | ReactNode | 无 |
+| footerFill| 底部按钮是否撑满 (>= 2.xx.0 ) | boolean | false | 
 | header | 对话框头部 | ReactNode | 无 |
 | height | 高度 | number | 无 |
 | icon | 自定义 icon | ReactNode | - |

@@ -1,5 +1,3 @@
-/* argus-disable unPkgSensitiveInfo */
-/* eslint-disable max-len */
 import BaseFoundation, { DefaultAdapter } from '../base/foundation';
 import { isNumber, isString, isEqual, omit } from 'lodash';
 import KeyCode, { ENTER_KEY } from '../utils/keyCode';
@@ -66,7 +64,6 @@ export default class SelectFoundation extends BaseFoundation<SelectAdapter> {
     }
 
     // keyboard event listner
-    // eslint-disable-next-line @typescript-eslint/member-ordering
     _keydownHandler: (...arg: any[]) => void | null = null;
 
     init() {
@@ -355,6 +352,9 @@ export default class SelectFoundation extends BaseFoundation<SelectAdapter> {
             const newOptions = this._filterOption(options, sugInput).filter(item => !item._inputCreateOnly);
             this._adapter.updateOptions(newOptions);
             this.toggle2SearchInput(true);
+        } else {
+            // whether it is a filter or not, isFocus is guaranteed to be true when open
+            this._adapter.updateFocusState(true);
         }
         this._adapter.openMenu();
         this._setDropdownWidth();
@@ -386,8 +386,8 @@ export default class SelectFoundation extends BaseFoundation<SelectAdapter> {
         this._adapter.setIsFocusInContainer(false);
         // this.unBindKeyBoardEvent();
         // this._notifyBlur(e);
-        this._adapter.unregisterClickOutsideHandler();
         // this._adapter.updateFocusState(false);
+        this._adapter.unregisterClickOutsideHandler();
 
         const isFilterable = this._isFilterable();
         if (isFilterable) {
@@ -896,7 +896,6 @@ export default class SelectFoundation extends BaseFoundation<SelectAdapter> {
                     index = index - 1;
                     targetLabel = keys[index];
                     targetItem = selections.get(targetLabel);
-                    // eslint-disable-next-line
                     if (index == 0 && targetItem.disabled) {
                         isAllDisabled = true;
                     }
@@ -938,12 +937,13 @@ export default class SelectFoundation extends BaseFoundation<SelectAdapter> {
     }
 
     _removeInternalKey(option: BasicOptionProps) {
-        // eslint-disable-next-line
         let newOption = { ...option };
         delete newOption._parentGroup;
         delete newOption._show;
         delete newOption._selected;
         delete newOption._scrollIndex;
+        delete newOption._keyInJsx;
+        
         if ('_keyInOptionList' in newOption) {
             newOption.key = newOption._keyInOptionList;
             delete newOption._keyInOptionList;
@@ -1022,6 +1022,8 @@ export default class SelectFoundation extends BaseFoundation<SelectAdapter> {
         if (filter) {
             this.clearInput(e);
         }
+        // after click showClear button, the select need to be focused
+        this.focus();
         this.clearSelected();
         // prevent this click open dropdown
         e.stopPropagation();
@@ -1056,13 +1058,13 @@ export default class SelectFoundation extends BaseFoundation<SelectAdapter> {
     }
 
     handleTriggerBlur(e: FocusEvent) {
-        this._adapter.updateFocusState(false);
         const { filter, autoFocus } = this.getProps();
         const { isOpen, isFocus } = this.getStates();
         // Under normal circumstances, blur will be accompanied by clickOutsideHandler, so the notify of blur can be called uniformly in clickOutsideHandler
         // But when autoFocus or the panel is close, because clickOutsideHandler is not register or unregister, you need to listen for the trigger's blur and trigger the notify callback
         if (isFocus && !isOpen) {
             this._notifyBlur(e);
+            this._adapter.updateFocusState(false);
         }
     }
 

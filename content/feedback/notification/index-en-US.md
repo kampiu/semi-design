@@ -1,6 +1,6 @@
 ---
 localeCode: en-US
-order: 68
+order: 69
 category: Feedback
 title:  Notification
 subTitle: Notification
@@ -264,6 +264,40 @@ import { Notification, Button } from '@douyinfe/semi-ui';
 };
 ```
 
+### Update content
+
+You can use id to update notification content. >=2.45.0
+
+```jsx live=true
+import React from 'react';
+import { Notification, Button } from '@douyinfe/semi-ui';
+
+() => (
+    <Button
+        onClick={() => {
+            const id = Notification.open({
+                title: 'Hi, Bytedance',
+                content: 'ies dance dance dance',
+                duration: 3,
+            })
+            setTimeout(() => {
+                Notification.open({
+                    title: 'Hi, Bytedance',
+                    content: 'updated',
+                    duration: 10,
+                    id
+                })
+            }, 1000)
+        }
+        }
+    >
+        Display Notification
+    </Button>
+);
+
+
+```
+
 ## API Reference
 
 The static methods provided are as follows:
@@ -280,20 +314,20 @@ Close Manually (`id` is the return value of the display methods)
 
 -   `Notification.close(id)`
 
-| Properties   | Instructions                                                                                   | type                 | Default    | version |
-| ------------ | ---------------------------------------------------------------------------------------------- | -------------------- | ---------- | ------- |
-| content      | Content                                                                                        | ReactNode | ''      |  |
-| duration     | Automatic close delay, no auto-close when set to 0                                             | number               | 3          |         |
-| getPopupContainer | Specifies the parent DOM, and the bullet layer will be rendered to the DOM, you need to set 'position: relative` | () => HTMLElement | () => document.body    |  0.34.0     |
-| icon         | Topleft icon                                                                                   | ReactNode               |  |         |  |
-| position     | Pop-up position, one of `top`、`bottom`、`topLeft`、`topRight`、`bottomLeft`、`bottomRight`    | string               | `topRight` |         |
-| showClose    | Toggle Whether show close button                                                               | boolean              | true       | 0.25.0  |
-| theme | Style of background fill, one of `light`, `normal` | string | `normal`   |  1.0.0     |
-| title        | Title                                                                                          | string               | ReactNode | ''      |  |
-| zIndex       | Z-index value. Only take effect for the first time.                                                                               | number               | 1010       |         |
-| onClick      | Callback function when clicking the notification                                               | (e: event) => void   |            | 0.27 .0 |
-| onClose      | Callback function when closing notification, triggered for either auto-close or manually close | () => void |            |         |
-| onCloseClick | Callback function when actively clicking on the close button                                   | (id: string \| number) => void |            |         |
+| Properties   | Instructions                                                                                                      | type                 | Default    | version |
+| ------------ |-------------------------------------------------------------------------------------------------------------------| -------------------- | ---------- | ------- |
+| content      | Content                                                                                                           | ReactNode | ''      |  |
+| duration     | Automatic close delay, no auto-close when set to 0                                                                | number               | 3          |         |
+| getPopupContainer | Specifies the parent DOM, and the bullet layer will be rendered to the DOM, you need to set 'position: relative` This will change the DOM tree position, but not the view's rendering position. | () => HTMLElement | () => document.body    |  0.34.0     |
+| icon         | Topleft icon                                                                                                      | ReactNode               |  |         |  |
+| position     | Pop-up position, one of `top`、`bottom`、`topLeft`、`topRight`、`bottomLeft`、`bottomRight`                            | string               | `topRight` |         |
+| showClose    | Toggle Whether show close button                                                                                  | boolean              | true       | 0.25.0  |
+| theme | Style of background fill, one of `light`, `normal`                                                                | string | `normal`   |  1.0.0     |
+| title        | Title                                                                                                             | string               | ReactNode | ''      |  |
+| zIndex       | Z-index value. Only take effect for the first time.                                                               | number               | 1010       |         |
+| onClick      | Callback function when clicking the notification                                                                  | (e: event) => void   |            | 0.27 .0 |
+| onClose      | Callback function when closing notification, triggered for either auto-close or manually close                    | () => void |            |         |
+| onCloseClick | Callback function when actively clicking on the close button                                                      | (id: string \| number) => void |            |         |
 
 The global configuration is set before any method call, and takes effect only once (>= 0.25.0):
 

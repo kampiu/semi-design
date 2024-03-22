@@ -1,4 +1,3 @@
-/* eslint-disable arrow-body-style */
 import React, { CSSProperties, ReactNode, MutableRefObject, RefCallback, Key, ReactElement } from 'react';
 import cls from 'classnames';
 import BaseComponent from '../_base/baseComponent';
@@ -11,7 +10,7 @@ import IntersectionObserver from './intersectionObserver';
 import OverflowListFoundation, { OverflowListAdapter } from '@douyinfe/semi-foundation/overflowList/foundation';
 
 import '@douyinfe/semi-foundation/overflowList/overflowList.scss';
-import { cloneDeep } from '../_utils';
+import { cloneDeep, getDefaultPropsFromGlobalConfig } from '../_utils';
 
 const prefixCls = cssClasses.PREFIX;
 const Boundary = strings.BOUNDARY_MAP;
@@ -55,7 +54,9 @@ export interface OverflowListState {
 
 // reference to https://github.com/palantir/blueprint/blob/1aa71605/packages/core/src/components/overflow-list/overflowList.tsx#L34
 class OverflowList extends BaseComponent<OverflowListProps, OverflowListState> {
-    static defaultProps = {
+    static __SemiComponentName__ = "OverflowList";
+
+    static defaultProps = getDefaultPropsFromGlobalConfig(OverflowList.__SemiComponentName__, {
         collapseFrom: 'end',
         minVisibleItems: 0,
         overflowRenderer: (): ReactElement => null,
@@ -63,7 +64,7 @@ class OverflowList extends BaseComponent<OverflowListProps, OverflowListState> {
         threshold: 0.75,
         visibleItemRenderer: (): ReactElement => null,
         onOverflow: () => null,
-    };
+    })
     static propTypes = {
         // if render in scroll mode, key is required in items
         className: PropTypes.string,
@@ -285,12 +286,12 @@ class OverflowList extends BaseComponent<OverflowListProps, OverflowListState> {
                         const child = React.cloneElement(element);
                         return (
                             <ResizeObserver
-                                key={key}
+                                key={key ?? idx}
                                 onResize={([entry]) => this.onItemResize(entry, item, idx)}
                             >
                                 {/* 用div包起来，可以直接在resize回调中拿到宽度，不用通过获取元素的padding, margin, border-width求和计算宽度*/}
                                 {/* This div wrap can get width directly rather than do the math of padding, margin, border-width*/}
-                                <div key={key} className={`${prefixCls}-item`}>
+                                <div key={key ?? idx} className={`${prefixCls}-item`}>
                                     {child}
                                 </div>
                             </ResizeObserver>);

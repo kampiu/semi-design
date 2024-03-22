@@ -34,7 +34,7 @@ $spacing-modal_header-paddingX: 0;
 $spacing-modal_body_wrapper-marginY: 24px;
 $spacing-modal_body_wrapper-marginX: 0;
 $spacing-modal_body-margin: 0; // 模态框 body 外边距
-$spacing-modal_body-padding: 0; // 模态框 footer 垂直外边距
+$spacing-modal_body-padding: 0; // 模态框 内容外Padding
 $spacing-modal_footer-marginY: 24px; // 模态框 footer 垂直外边距
 $spacing-modal_footer-marginX: 0; // 模态框 footer 水平外边距
 $spacing-modal_footer-paddingY:0;
@@ -69,5 +69,9 @@ $color-modal_header-border:transparent;  // 模态框 header 底部描边颜色
 $width-modal_header-border:0; // 模态框 header 底部描边宽度
 $color-modal_footer-border:transparent; // 模态框 footer 顶部描边颜色
 $width-modal_footer-border:0; // 模态框 footer 顶部描边宽度
+
+
+//shadow
+$shadow-modal_content: var(--semi-shadow-elevated);
 
 

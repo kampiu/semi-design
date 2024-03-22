@@ -40,6 +40,7 @@ import GraphemeSplitter from 'grapheme-splitter';
 export * from '@douyinfe/semi-ui';
 export * from '@douyinfe/semi-foundation/utils';
 export * from '@douyinfe/semi-icons';
+// export * from '@douyinfe/semi-icons-lab';
 export * from '@douyinfe/semi-illustrations';
 
 export {
@@ -126,3 +127,103 @@ export {
 export { debounce, throttle, range, get, filter, map, some };
 
 export { zh_CN, en_GB, en_US, ko_KR, ja_JP, ar, vi_VN, ru_RU, id_ID, ms_MY, th_TH, tr_TR, pt_BR, zh_TW, nl_NL, pl_PL, sv_SE, es, de, it, fr, ro };
+
+export {
+    useSortable,
+    SortableContext,
+    sortableKeyboardCoordinates,
+    verticalListSortingStrategy,
+} from '@dnd-kit/sortable';
+  
+export { CSS as cssDndKit } from '@dnd-kit/utilities';
+  
+export {
+    closestCenter,
+    DragOverlay,
+    DndContext,
+    MouseSensor,
+    TouchSensor,
+    useSensor,
+    useSensors,
+    KeyboardSensor,
+    TraversalOrder
+} from '@dnd-kit/core';
+
+
+export {
+    IconAccessibility, 
+    IconAnchor,
+    IconAutocomplete,
+    IconAvatar,
+    // IconBackTop, 
+    IconBadge,
+    IconBadgeStar, 
+    IconBanner, 
+    IconBreadcrumb,
+    IconButton,
+    // IconCalendar,
+    IconCard,
+    IconCascader,
+    IconCarousel,
+    IconChangelog, 
+    IconCheckbox,
+    IconConfig,
+    IconCollapse,
+    IconCollapsible,
+    IconColorPlatte,
+    IconColorPlatteNew,
+    IconDarkMode,
+    IconDatePicker,
+    IconDescriptions,
+    IconDivider,
+    IconDropdown,
+    IconEmpty,
+    IconFaq,
+    IconForm,
+    IconGettingStarted,
+    IconGrid, 
+    IconHeart,
+    IconHighlight,
+    // IconImage,
+    IconInput,
+    IconInputNumber,
+    IconIntro,
+    IconLayout,
+    // IconList,
+    IconLocaleProvider,
+    IconModal,
+    IconNavigation,
+    IconNotification,
+    IconOverflow,
+    IconPagination,
+    IconPopconfirm,
+    IconPopover,
+    IconProgress,
+    // IconRadio,
+    IconRating,
+    IconScrollList,
+    IconSelect,
+    IconSideSheet,
+    IconSkeleton,
+    IconSlider,
+    IconSpace,
+    // IconSpin,
+    IconSteps,
+    IconSwitch,
+    IconTable,
+    IconToken,
+    IconTabs,
+    IconTag,
+    IconTagInput, 
+    IconTimePicker,
+    IconTimeline,
+    IconToast, 
+    IconTooltip,
+    IconTransfer,
+    IconTree, 
+    IconTreeSelect,
+    IconTypography,
+    // IconUpload,
+    IconVersionTwo,
+    IconWheelChair
+} from '@douyinfe/semi-icons-lab';

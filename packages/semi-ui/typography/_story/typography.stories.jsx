@@ -1,9 +1,11 @@
-import React from 'react';
+import React, { useCallback } from 'react';
 import withPropsCombinations from 'react-storybook-addon-props-combinations';
 
 import Icon from '../../icons';
 import Typography from '../index';
 import { IconLink, IconTick, IconSetting } from '@douyinfe/semi-icons';
+import {HugeData} from "./HugeData";
+import { Tooltip } from '@douyinfe/semi-ui'
 
 export default {
   title: 'Typography'
@@ -587,6 +589,22 @@ export const EllipsisFromCenter = () => (
       我是一个酷炫的从中间折断的3号标题
     </Title>
     <br />
+    <Text
+        data-cy="nowrap-middile-ellipsis1"
+        ellipsis={{ pos: 'middle', rows: 1, showTooltip: true }}
+        style={{ width: '200px', whiteSpace: 'nowrap', overflow: 'hidden' }}
+    >
+      不能换行的单行从中间截断时，应该能正常展示省略
+    </Text>
+    <br />
+    <Text
+        data-cy="nowrap-middile-ellipsis2"
+        ellipsis={{ pos: 'middle', rows: 1, showTooltip: true }}
+        style={{ width: '200px', overflow: 'hidden' }}
+    >
+      This/one/does/not/wrap/like/the/one/before/but/does/not/have/whiteSpace/set
+    </Text>
+    <br />
     <Text ellipsis={{ pos: 'middle' }} style={{ width: '50%' }}>
       通常のテキストでさえ、切り捨てる機能が必要です
     </Text>
@@ -809,3 +827,57 @@ export const TextNoWarning = () => {
     </div>
   )
 }
+
+export const JsEllipsisNoTooltip = () => (
+  <Title 
+    heading={5} 
+    ellipsis={{ showTooltip: true, suffix: ' ' }} 
+    // wordBreak 设置在 Title 的style里
+    style={{ width: 250, wordBreak: 'break-all' }}
+  >
+      data_tns
+  </Title>
+)
+
+export const HugeDataDemo = () => {
+    return <HugeData/>
+}
+
+export const CustomTooltip = () => {
+  const customRenderTooltip = useCallback((content, children) => {
+    return <Tooltip content={content} style={{ backgroundColor: 'var(--semi-color-primary)' }}>{children}</Tooltip>
+  }, []);
+
+  return <div>
+     <Title 
+      heading={5} 
+      ellipsis={{ 
+        showTooltip: {
+          renderTooltip: customRenderTooltip
+        }
+      }} 
+      style={{ width: 250 }}
+      
+    >
+      这是一个自定义 tooltip 的省略文本，背景色是蓝色
+    </Title>
+  </div>
+}
+
+export const GlobalEllipsisPopoverCls = () => (
+  <Title 
+    heading={5} 
+    ellipsis={{ 
+      showTooltip: {
+        type: 'popover',
+        opts: {
+          className: 'testPopoverCls'
+        }
+      },
+    }} 
+    // wordBreak 设置在 Title 的style里
+    style={{ width: 250, wordBreak: 'break-all' }}
+  >
+    测试 showTooltip 中的 type 为 popover 时，传入的类名称正确
+  </Title>
+)

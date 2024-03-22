@@ -344,7 +344,7 @@ function App() {
         },
         {
             key: '4',
-            name: 'Semi Pro design draft.fig',
+            name: 'Semi D2C design draft.fig',
             nameIconSrc: 'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/figma-icon.png',
             size: '2M',
             owner: 'Jiang Pengzhi',
@@ -353,7 +353,7 @@ function App() {
         },
         {
             key: '5',
-            name: 'Semi Pro share docs',
+            name: 'Semi D2C share docs',
             nameIconSrc: 'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/docs-icon.png',
             size: '2M',
             owner: 'Hao Xuan',
@@ -362,7 +362,7 @@ function App() {
         },
         {
             key: '6',
-            name: 'Semi Pro Design docs',
+            name: 'Semi D2C Design docs',
             nameIconSrc: 'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/docs-icon.png',
             size: '34KB',
             owner: 'Zoey Edwards',
@@ -440,7 +440,7 @@ const raw = [
     },
     {
         key: '4',
-        name: 'Semi Pro design draft title may be a bit long Tooltip should be displayed at this time.fig',
+        name: 'Semi D2C design draft title may be a bit long Tooltip should be displayed at this time.fig',
         nameIconSrc: 'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/docs-icon.png',
         size: '34KB',
         owner: 'Jiang Qi',
@@ -585,8 +585,8 @@ const columns = [
                 value: 'Semi Design design draft',
             },
             {
-                text: 'Semi Pro design draft',
-                value: 'Semi Pro design draft',
+                text: 'Semi D2C design draft',
+                value: 'Semi D2C design draft',
             },
         ],
         onFilter: (value, record) => record.name.includes(value),
@@ -647,7 +647,7 @@ function App() {
             const randomNumber = (i * 1000) % 199;
             data.push({
                 key: '' + i,
-                name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi Pro design draft${i}.fig`,
+                name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi D2C design draft${i}.fig`,
                 owner: isSemiDesign ? 'Jiang Pengzhi' : 'Hao Xuan',
                 size: randomNumber,
                 updateTime: new Date().valueOf() + randomNumber * DAY,
@@ -705,8 +705,8 @@ const columns = [
                 value: 'Semi Design design draft',
             },
             {
-                text: 'Semi Pro design draft',
-                value: 'Semi Pro design draft',
+                text: 'Semi D2C design draft',
+                value: 'Semi D2C design draft',
             },
         ],
         onFilter: (value, record) => record.name.includes(value),
@@ -748,7 +748,7 @@ const getData = () => {
         const randomNumber = (i * 1000) % 199;
         data.push({
             key: '' + i,
-            name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi Pro design draft${i}.fig`,
+            name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi D2C design draft${i}.fig`,
             owner: isSemiDesign ? 'Jiang Pengzhi' : 'Hao Xuan',
             size: randomNumber,
             updateTime: new Date().valueOf() + randomNumber * DAY,
@@ -843,8 +843,8 @@ const columns = [
                 value: 'Semi Design design draft',
             },
             {
-                text: 'Semi Pro design draft',
-                value: 'Semi Pro design draft',
+                text: 'Semi D2C design draft',
+                value: 'Semi D2C design draft',
             },
         ],
         onFilter: (value, record) => record.name.includes(value),
@@ -917,7 +917,7 @@ function App() {
             const randomNumber = (i * 1000) % 199;
             data.push({
                 key: '' + i,
-                name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi Pro design draft${i}.fig`,
+                name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi D2C design draft${i}.fig`,
                 owner: isSemiDesign ? 'Jiang Pengzhi' : 'Hao Xuan',
                 size: randomNumber,
                 updateTime: new Date().valueOf() + randomNumber * DAY,
@@ -971,8 +971,8 @@ const columns = [
                 value: 'Semi Design 设计稿',
             },
             {
-                text: 'Semi Pro 设计稿',
-                value: 'Semi Pro 设计稿',
+                text: 'Semi D2C 设计稿',
+                value: 'Semi D2C 设计稿',
             },
         ],
         onFilter: (value, record) => record.name.includes(value),
@@ -1045,7 +1045,7 @@ function App() {
             const randomNumber = (i * 1000) % 199;
             data.push({
                 key: '' + i,
-                name: isSemiDesign ? `Semi Design 设计稿${i}.fig` : `Semi Pro 设计稿${i}.fig`,
+                name: isSemiDesign ? `Semi Design 设计稿${i}.fig` : `Semi D2C 设计稿${i}.fig`,
                 owner: isSemiDesign ? '姜鹏志' : '郝宣',
                 size: randomNumber,
                 updateTime: new Date().valueOf() + randomNumber * DAY,
@@ -1107,8 +1107,8 @@ const columns = [
                 value: 'Semi Design design draft',
             },
             {
-                text: 'Semi Pro design draft',
-                value: 'Semi Pro design draft',
+                text: 'Semi D2C design draft',
+                value: 'Semi D2C design draft',
             },
         ],
         onFilter: (value, record) => record.name.includes(value),
@@ -1168,7 +1168,7 @@ function App() {
             const randomNumber = (i * 1000) % 199;
             data.push({
                 key: '' + i,
-                name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi Pro design draft${i}.fig`,
+                name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi D2C design draft${i}.fig`,
                 owner: isSemiDesign ? 'Jiang Pengzhi' : 'Hao Xuan',
                 size: randomNumber,
                 updateTime: new Date().valueOf() + randomNumber * DAY,
@@ -1184,6 +1184,425 @@ function App() {
     }, []);
 
     return <Table columns={columns} dataSource={dataSource} rowSelection={rowSelection} scroll={scroll} />;
+}
+
+render(App);
+```
+
+When sorter is a function type, the sortOrder status can be obtained through the third parameter of the function. The function type is `(a?: RecordType, b?: RecordType, sortOrder?: 'ascend' | 'descend') => number`. Supported by version v2.47.
+
+```jsx live=true noInline=true dir="column"
+import React from 'react';
+import { Table, Avatar } from '@douyinfe/semi-ui';
+import * as dateFns from 'date-fns';
+
+function App() {
+    const columns = [
+        {
+            title: 'Title',
+            dataIndex: 'name',
+            width: 400,
+            render: (text, record, index) => {
+                return (
+                    <div>
+                        <Avatar size="small" shape="square" src={figmaIconUrl} style={{ marginRight: 12 }}></Avatar>
+                        {text}
+                    </div>
+                );
+            }
+        },
+        {
+            title: 'Size',
+            dataIndex: 'size',
+            sorter: (r1, r2, order) => {
+                const a = r1.size;
+                const b = r2.size;
+                if (typeof a === "number" && typeof b === "number") {
+                    return a - b;
+                } else if (typeof a === "undefined") {
+                    return order === "ascend" ? 1 : -1;
+                } else if (typeof b === "undefined") {
+                    return order === "ascend" ? -1 : 1;
+                } else {
+                    return 0;
+                }
+            },
+            render: text => text ? `${text} KB` : 'Unknown',
+        },
+        {
+            title: 'Owner',
+            dataIndex: 'owner',
+            render: (text, record, index) => {
+                return (
+                    <div>
+                        <Avatar size="small" color={record.avatarBg} style={{ marginRight: 4 }}>
+                            {typeof text === 'string' && text.slice(0, 1)}
+                        </Avatar>
+                        {text}
+                    </div>
+                );
+            },
+        },
+        {
+            title: 'Update',
+            dataIndex: 'updateTime',
+            render: value => {
+                return dateFns.format(new Date(value), 'yyyy-MM-dd');
+            },
+        },
+    ];
+
+    const figmaIconUrl = 'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/figma-icon.png';
+    const docIconUrl = 'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/docs-icon.png';
+
+    const dataSource = [
+        {
+            key: '1',
+            name: 'Semi Design draft.fig',
+            nameIconSrc: figmaIconUrl,
+            size: 3,
+            owner: 'Jiang',
+            updateTime: '2020-02-02 05:13',
+            avatarBg: 'grey',
+        },
+        {
+            key: '2',
+            name: 'Semi D2C draft',
+            nameIconSrc: docIconUrl,
+            size: undefined,
+            owner: 'Hao',
+            updateTime: '2020-01-17 05:31',
+            avatarBg: 'red',
+        },
+        {
+            key: '3',
+            name: 'Semi D2C doc 3',
+            nameIconSrc: docIconUrl,
+            size: 1,
+            owner: 'Zoey Edwards',
+            updateTime: '2020-01-26 11:01',
+            avatarBg: 'light-blue',
+        },
+        {
+            key: '4',
+            name: 'Semi Design doc 4',
+            nameIconSrc: docIconUrl,
+            size: 5,
+            owner: 'Zoey Edwards',
+            updateTime: '2020-01-26 11:01',
+            avatarBg: 'light-blue',
+        },
+        {
+            key: '5',
+            name: 'Semi D2C doc 5',
+            nameIconSrc: docIconUrl,
+            size: undefined,
+            owner: 'Zoey Edwards',
+            updateTime: '2020-01-26 11:01',
+            avatarBg: 'light-blue',
+        },
+        {
+            key: '6',
+            name: 'Semi Design doc 6',
+            nameIconSrc: docIconUrl,
+            size: 2,
+            owner: 'Zoey Edwards',
+            updateTime: '2020-01-26 11:01',
+            avatarBg: 'light-blue',
+        },
+    ];
+
+    return <Table columns={columns} dataSource={dataSource} />;
+}
+
+render(App);
+```
+
+### Custom Header Filtering
+
+If you need to display the filter input box in the table header, you can pass ReactNode in the `title` and use it with `filteredValue`.
+
+```jsx live=true noInline=true dir="column"
+import React, { useState, useEffect, useRef } from 'react';
+import { Table, Avatar, Input, Space } from '@douyinfe/semi-ui';
+import * as dateFns from 'date-fns';
+
+function App() {
+    const [dataSource, setData] = useState([]);
+    const [filteredValue, setFilteredValue] = useState([]);
+    const compositionRef = useRef({ isComposition: false });
+
+    const DAY = 24 * 60 * 60 * 1000;
+    const figmaIconUrl = 'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/figma-icon.png';
+
+
+    const handleChange = (value) => {
+        if (compositionRef.current.isComposition) {
+            return;
+        }
+        const newFilteredValue = value ? [value] : [];
+        setFilteredValue(newFilteredValue);
+    };
+    const handleCompositionStart = () => {
+        compositionRef.current.isComposition = true;
+    };
+
+    const handleCompositionEnd = (event) => {
+        compositionRef.current.isComposition = false;
+        const value = event.target.value;
+        const newFilteredValue = value ? [value] : [];
+        setFilteredValue(newFilteredValue);
+    };
+
+
+    const columns = [
+        {
+            title: (
+                <Space>
+                    <span>Title</span>
+                    <Input
+                        placeholder="Input filter value"
+                        style={{ width: 200 }}
+                        onCompositionStart={handleCompositionStart}
+                        onCompositionEnd={handleCompositionEnd}
+                        onChange={handleChange}
+                        showClear 
+                    />
+                </Space>
+            ),
+            dataIndex: 'name',
+            width: 400,
+            render: (text, record, index) => {
+                return (
+                    <div>
+                        <Avatar size="small" shape="square" src={figmaIconUrl} style={{ marginRight: 12 }}></Avatar>
+                        {text}
+                    </div>
+                );
+            },
+            onFilter: (value, record) => record.name.includes(value),
+            filteredValue,
+        },
+        {
+            title: 'Size',
+            dataIndex: 'size',
+            sorter: (a, b) => (a.size - b.size > 0 ? 1 : -1),
+            render: text => `${text} KB`,
+        },
+        {
+            title: 'Owner',
+            dataIndex: 'owner',
+            render: (text, record, index) => {
+                return (
+                    <div>
+                        <Avatar size="small" color={record.avatarBg} style={{ marginRight: 4 }}>
+                            {typeof text === 'string' && text.slice(0, 1)}
+                        </Avatar>
+                        {text}
+                    </div>
+                );
+            },
+        },
+        {
+            title: 'Update',
+            dataIndex: 'updateTime',
+            sorter: (a, b) => (a.updateTime - b.updateTime > 0 ? 1 : -1),
+            render: value => {
+                return dateFns.format(new Date(value), 'yyyy-MM-dd');
+            },
+        },
+    ];
+
+    const getData = () => {
+        const data = [];
+        for (let i = 0; i < 46; i++) {
+            const isSemiDesign = i % 2 === 0;
+            const randomNumber = (i * 1000) % 199;
+            data.push({
+                key: '' + i,
+                name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi D2C design draft${i}.fig`,
+                owner: isSemiDesign ? 'Jiang Pengzhi' : 'Hao Xuan',
+                size: randomNumber,
+                updateTime: new Date().valueOf() + randomNumber * DAY,
+                avatarBg: isSemiDesign ? 'grey' : 'red',
+            });
+        }
+        return data;
+    };
+
+    useEffect(() => {
+        const data = getData();
+        setData(data);
+    }, []);
+
+    return <Table columns={columns} dataSource={dataSource} />;
+}
+
+render(App);
+```
+
+
+
+### Custom Filter Rendering
+
+Use `renderFilterDropdown` to customize the render filter panel. v2.52 supported.
+
+You can call `setTempFilteredValue` to store the filter value when the user enters the filter value, and call `confirm` to trigger the actual filtering after the filter value is entered. You can also filter directly through `confirm({ filteredValue })`.
+
+The reason for setting `tempFilteredValue` is that in scenarios where temporary filtered values need to be stored, there is no need to declare a state to save this temporary filtered value.
+
+```typescript
+type RenderFilterDropdown = (props?: RenderFilterDropdownProps) => React.ReactNode;
+interface RenderFilterDropdownProps {
+     /** Temporary filter value, the initial value is `filteredValue` or `defaultFilteredValue` */
+     tempFilteredValue: any[];
+     /** Set temporary filter value */
+     setTempFilteredValue: (tempFilteredValue: any[]) => void;
+     /** `confirm` will assign `tempFilteredValue` to `filteredValue` by default and trigger the `onChange` event. You can also set the filter value directly by passing in `filteredValue` */
+     confirm: (props?: { closeDropdown?: boolean; filteredValue?: any[] }) => void;
+     /** Clear filter values and temporary filter values */
+     clear: (props?: { closeDropdown?: boolean }) => void;
+     /** Close dropdown */
+     close: () => void;
+     /** Filter configuration items, do not pass if not required */
+     filters?: RenderDropdownProps['filters']
+}
+```
+
+
+```jsx live=true noInline=true dir="column"
+import React, { useState, useEffect, useRef } from 'react';
+import { Table, Avatar, Input, Button, Space } from '@douyinfe/semi-ui';
+import * as dateFns from 'date-fns';
+
+function App() {
+    const [dataSource, setData] = useState([]);
+    const inputRef = useRef();
+
+    const DAY = 24 * 60 * 60 * 1000;
+    const figmaIconUrl = 'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/figma-icon.png';
+
+    const columns = [
+        {
+            title: 'Title',
+            dataIndex: 'name',
+            width: 400,
+            render: (text, record, index) => {
+                return (
+                    <div>
+                        <Avatar size="small" shape="square" src={figmaIconUrl} style={{ marginRight: 12 }}></Avatar>
+                        {text}
+                    </div>
+                );
+            },
+            onFilter: (value, record) => record.name.includes(value),
+            renderFilterDropdown: (props) => {
+                console.log('renderFilterDropdown', props);
+                const { tempFilteredValue, setTempFilteredValue, confirm, clear, close } = props;
+
+                const handleChange = value => {
+                    const filteredValue = value ? [value] : [];
+                    setTempFilteredValue(filteredValue);
+                    // You can also filter directly when the input value changes
+                    // confirm({ filteredValue });
+                };
+
+                return (
+                    <Space vertical align='start' style={{ padding: 8 }}>
+                        <Input ref={inputRef} value={tempFilteredValue[0]} onChange={handleChange}/>
+                        <Space>
+                            <Button onClick={() => confirm({ closeDropdown: true })}>Filter+Close</Button>
+                            <Button onClick={() => clear({ closeDropdown: true })}>Clear+Close</Button>
+                            <Button onClick={() => close()}>Close</Button>
+                        </Space>
+                    </Space>
+                );
+            },
+            onFilterDropdownVisibleChange: (visible) => {
+                console.log('inputRef', visible, inputRef);
+                if (inputRef.current && inputRef.current.focus) {
+                    inputRef.current.focus();
+                }
+            }
+        },
+        {
+            title: 'Size',
+            dataIndex: 'size',
+            sorter: (a, b) => (a.size - b.size > 0 ? 1 : -1),
+            render: text => `${text} KB`,
+        },
+        {
+            title: 'Owner',
+            dataIndex: 'owner',
+            render: (text, record, index) => {
+                return (
+                    <div>
+                        <Avatar size="small" color={record.avatarBg} style={{ marginRight: 4 }}>
+                            {typeof text === 'string' && text.slice(0, 1)}
+                        </Avatar>
+                        {text}
+                    </div>
+                );
+            },
+            onFilter: (value, record) => record.owner.includes(value),
+            defaultFilteredValue: ['Jiang Pengzhi'],
+            renderFilterDropdown: (props) => {
+                console.log('renderFilterDropdown', props);
+                const { tempFilteredValue, setTempFilteredValue, confirm, clear, close } = props;
+
+                const handleChange = (value) => {
+                    if (value) {
+                        setTempFilteredValue([value]);
+                    } else {
+                        setTempFilteredValue([]);
+                    }
+                };
+
+                return (
+                    <Space vertical align='start' style={{ padding: 8 }}>
+                        <Input value={tempFilteredValue[0]} onChange={handleChange}/>
+                        <Space>
+                            <Button onClick={() => confirm({ closeDropdown: false })}>Filter+Close</Button>
+                            <Button onClick={() => clear({ closeDropdown: false })}>Clear+Close</Button>
+                            <Button onClick={() => close()}>Close</Button>
+                        </Space>
+                    </Space>
+                );
+            },
+        },
+        {
+            title: 'Update',
+            dataIndex: 'updateTime',
+            sorter: (a, b) => (a.updateTime - b.updateTime > 0 ? 1 : -1),
+            render: value => {
+                return dateFns.format(new Date(value), 'yyyy-MM-dd');
+            },
+        },
+    ];
+
+    const getData = () => {
+        const data = [];
+        for (let i = 0; i < 46; i++) {
+            const isSemiDesign = i % 2 === 0;
+            const randomNumber = (i * 1000) % 199;
+            data.push({
+                key: '' + i,
+                name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi D2C design draft${i}.fig`,
+                owner: isSemiDesign ? 'Jiang Pengzhi' : 'Hao Xuan',
+                size: randomNumber,
+                updateTime: new Date().valueOf() + randomNumber * DAY,
+                avatarBg: isSemiDesign ? 'grey' : 'red',
+            });
+        }
+        return data;
+    };
+
+    useEffect(() => {
+        const data = getData();
+        setData(data);
+    }, []);
+
+    return <Table columns={columns} dataSource={dataSource} />;
 }
 
 render(App);
@@ -1230,8 +1649,8 @@ const columns = [
                 value: 'Semi Design design draft',
             },
             {
-                text: 'Semi Pro design draft',
-                value: 'Semi Pro design draft',
+                text: 'Semi D2C design draft',
+                value: 'Semi D2C design draft',
             },
         ],
         onFilter: (value, record) => record.name.includes(value),
@@ -1299,7 +1718,7 @@ function App() {
             const randomNumber = (i * 1000) % 199;
             data.push({
                 key: '' + i,
-                name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi Pro design draft${i}.fig`,
+                name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi D2C design draft${i}.fig`,
                 owner: isSemiDesign ? 'Jiang Pengzhi' : 'Hao Xuan',
                 size: randomNumber,
                 updateTime: new Date().valueOf() + randomNumber * DAY,
@@ -2357,8 +2776,8 @@ function EventTable(props = {}) {
                         value: 'Semi Design design draft',
                     },
                     {
-                        text: 'Semi Pro design draft',
-                        value: 'Semi Pro design draft',
+                        text: 'Semi D2C design draft',
+                        value: 'Semi D2C design draft',
                     },
                 ],
                 onFilter: (value, record) => record.name.includes(value),
@@ -2402,7 +2821,7 @@ function EventTable(props = {}) {
             const randomNumber = (i * 1000) % 199;
             _data.push({
                 key: '' + i,
-                name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi Pro design draft${i}.fig`,
+                name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi D2C design draft${i}.fig`,
                 owner: isSemiDesign ? 'Jiang Pengzhi' : 'Hao Xuan',
                 size: randomNumber,
                 updateTime: new Date().valueOf() + randomNumber * DAY,
@@ -2536,7 +2955,7 @@ function App() {
         },
         {
             key: '4',
-            name: 'Semi Pro design draft.fig',
+            name: 'Semi D2C design draft.fig',
             nameIconSrc: 'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/figma-icon.png',
             size: '2M',
             owner: 'Jiang Pengzhi',
@@ -2545,7 +2964,7 @@ function App() {
         },
         {
             key: '5',
-            name: 'Semi Pro share docs',
+            name: 'Semi D2C share docs',
             nameIconSrc: 'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/docs-icon.png',
             size: '2M',
             owner: 'Hao Xuan',
@@ -2554,7 +2973,7 @@ function App() {
         },
         {
             key: '6',
-            name: 'Semi Pro Design docs',
+            name: 'Semi D2C Design docs',
             nameIconSrc: 'https://lf3-static.bytednsdoc.com/obj/eden-cn/ptlz_zlp/ljhwZthlaukjlkulzlp/docs-icon.png',
             size: '34KB',
             owner: 'Zoey Edwards',
@@ -2603,8 +3022,8 @@ function App() {
                     value: 'Semi Design',
                 },
                 {
-                    text: 'Semi Pro',
-                    value: 'Semi Pro',
+                    text: 'Semi D2C',
+                    value: 'Semi D2C',
                 },
             ],
             onFilter: (value, record) => record.name.includes(value),
@@ -2622,8 +3041,8 @@ function App() {
                     value: 'Semi Design',
                 },
                 {
-                    text: 'Semi Pro',
-                    value: 'Semi Pro',
+                    text: 'Semi D2C',
+                    value: 'Semi D2C',
                 },
             ],
             onFilter: (value, record) => record.name.includes(value),
@@ -2717,8 +3136,8 @@ function App() {
                     value: 'Semi Design',
                 },
                 {
-                    text: 'Semi Pro',
-                    value: 'Semi Pro',
+                    text: 'Semi D2C',
+                    value: 'Semi D2C',
                 },
             ],
             onFilter: (value, record) => record.name.includes(value),
@@ -2736,8 +3155,8 @@ function App() {
                     value: 'Semi Design',
                 },
                 {
-                    text: 'Semi Pro',
-                    value: 'Semi Pro',
+                    text: 'Semi D2C',
+                    value: 'Semi D2C',
                 },
             ],
             onFilter: (value, record) => record.name.includes(value),
@@ -2825,8 +3244,12 @@ But you need to pay attention to some parameters:
 
 -   `resizable` is set to `true` or an `object`
 -   Any column in `columns` that requires a telescopic function should specify the `width`field (if not passed, the column does not have a telescopic function and its column width will be automatically adjusted by the browser)
+-   `column.resize` can take effect after resizable is enabled. After setting to false, the column no longer supports scaling. v2.42 support
 
-> It is not recommended to use with fixed columns at the same time. Fixed columns need to specify `scroll.x`, which stipulates that the table has a width range, and the flexible column will expand the column width, which may cause the table to be misaligned
+
+> When used with fixed columns, you need to specify a column without setting the width
+
+> It is not recommended to use it with `scroll.x` at the same time. scroll.x specifies that the table has a width range, and stretching columns will expand the column width, which may cause the table to be misaligned
 
 ```jsx live=true noInline=true dir="column"
 import React, { useMemo } from 'react';
@@ -2841,7 +3264,8 @@ function ResizableDemo() {
         {
             title: 'Title',
             dataIndex: 'name',
-            width: 400,
+            width: 300,
+            resize: false,
             render: (text, record, index) => {
                 return (
                     <div>
@@ -2856,8 +3280,8 @@ function ResizableDemo() {
                     value: 'Semi Design design draft',
                 },
                 {
-                    text: 'Semi Pro design draft',
-                    value: 'Semi Pro design draft',
+                    text: 'Semi D2C design draft',
+                    value: 'Semi D2C design draft',
                 },
             ],
             onFilter: (value, record) => record.name.includes(value),
@@ -2892,6 +3316,16 @@ function ResizableDemo() {
                 return dateFns.format(new Date(value), 'yyyy-MM-dd');
             },
         },
+        {
+            title: 'Operate',
+            dataIndex: 'operate',
+            fixed: 'right',
+            width: 100,
+            resize: false,
+            render: () => {
+                return <IconMore />;
+            },
+        },
     ];
 
     const data = useMemo(() => {
@@ -2901,7 +3335,7 @@ function ResizableDemo() {
             const randomNumber = (i * 1000) % 199;
             _data.push({
                 key: '' + i,
-                name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi Pro design draft${i}.fig`,
+                name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi D2C design draft${i}.fig`,
                 owner: isSemiDesign ? 'Jiang Pengzhi' : 'Hao Xuan',
                 size: randomNumber,
                 updateTime: new Date().valueOf() + randomNumber * DAY,
@@ -2956,8 +3390,8 @@ function ResizableDemo() {
                     value: 'Semi Design design draft',
                 },
                 {
-                    text: 'Semi Pro design draft',
-                    value: 'Semi Pro design draft',
+                    text: 'Semi D2C design draft',
+                    value: 'Semi D2C design draft',
                 },
             ],
             onFilter: (value, record) => record.name.includes(value),
@@ -3001,7 +3435,7 @@ function ResizableDemo() {
             const randomNumber = (i * 1000) % 199;
             _data.push({
                 key: '' + i,
-                name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi Pro design draft${i}.fig`,
+                name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi D2C design draft${i}.fig`,
                 owner: isSemiDesign ? 'Jiang Pengzhi' : 'Hao Xuan',
                 size: randomNumber,
                 updateTime: new Date().valueOf() + randomNumber * DAY,
@@ -3136,8 +3570,8 @@ const columns = [
                 value: 'Semi Design design draft',
             },
             {
-                text: 'Semi Pro design draft',
-                value: 'Semi Pro design draft',
+                text: 'Semi D2C design draft',
+                value: 'Semi D2C design draft',
             },
         ],
         onFilter: (value, record) => record.name.includes(value),
@@ -3180,7 +3614,7 @@ for (let i = 0; i < 46; i++) {
     const randomNumber = (i * 1000) % 199;
     initData.push({
         key: '' + i,
-        name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi Pro design draft${i}.fig`,
+        name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi D2C design draft${i}.fig`,
         owner: isSemiDesign ? 'Jiang Pengzhi' : 'Hao Xuan',
         size: randomNumber,
         updateTime: new Date().valueOf() + randomNumber * DAY,
@@ -3290,8 +3724,8 @@ const columns = [
                 value: 'Semi Design design draft',
             },
             {
-                text: 'Semi Pro design draft',
-                value: 'Semi Pro design draft',
+                text: 'Semi D2C design draft',
+                value: 'Semi D2C design draft',
             },
         ],
         onFilter: (value, record) => record.name.includes(value),
@@ -3333,7 +3767,7 @@ const getData = () => {
         const randomNumber = ((i * 1000) % 19) + 100;
         data.push({
             key: '' + i,
-            name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi Pro design draft${i}.fig`,
+            name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi D2C design draft${i}.fig`,
             owner: isSemiDesign ? 'Jiang Pengzhi' : 'Hao Xuan',
             size: randomNumber,
             updateTime: new Date().valueOf() + randomNumber * DAY,
@@ -3414,8 +3848,8 @@ const columns = [
                 value: 'Semi Design design draft',
             },
             {
-                text: 'Semi Pro design draft',
-                value: 'Semi Pro design draft',
+                text: 'Semi D2C design draft',
+                value: 'Semi D2C design draft',
             },
         ],
         onFilter: (value, record) => record.name.includes(value),
@@ -3460,7 +3894,7 @@ const getData = () => {
         const randomNumber = (i * 1000) % 199;
         data.push({
             key: '' + i,
-            name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi Pro design draft${i}.fig`,
+            name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi D2C design draft${i}.fig`,
             owner: isSemiDesign ? 'Jiang Pengzhi' : 'Hao Xuan',
             size: randomNumber,
             updateTime: new Date().valueOf() + randomNumber * DAY,
@@ -3522,8 +3956,8 @@ const columns = [
                 value: 'Semi Design design draft',
             },
             {
-                text: 'Semi Pro design draft',
-                value: 'Semi Pro design draft',
+                text: 'Semi D2C design draft',
+                value: 'Semi D2C design draft',
             },
         ],
         onFilter: (value, record) => record.name.includes(value),
@@ -3576,7 +4010,7 @@ function InfiniteScrollDemo() {
             const randomNumber = (i * 1000) % 199;
             newData.push({
                 key: '' + i,
-                name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi Pro design draft${i}.fig`,
+                name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi D2C design draft${i}.fig`,
                 owner: isSemiDesign ? 'Jiang Pengzhi' : 'Hao Xuan',
                 size: randomNumber,
                 updateTime: new Date().valueOf() + randomNumber * DAY,
@@ -3652,8 +4086,8 @@ class App extends React.Component {
                         value: 'Semi Design design draft',
                     },
                     {
-                        text: 'Semi Pro design draft',
-                        value: 'Semi Pro design draft',
+                        text: 'Semi D2C design draft',
+                        value: 'Semi D2C design draft',
                     },
                 ],
                 onFilter: (value, record) => record.name.includes(value),
@@ -3695,7 +4129,7 @@ class App extends React.Component {
                 const randomNumber = (i * 1000) % 199;
                 data.push({
                     key: '' + i,
-                    name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi Pro design draft${i}.fig`,
+                    name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi D2C design draft${i}.fig`,
                     owner: isSemiDesign ? 'Jiang Pengzhi' : 'Hao Xuan',
                     size: randomNumber,
                     updateTime: new Date().valueOf() + randomNumber * DAY,
@@ -4281,8 +4715,8 @@ const columns = [
                 value: 'Semi Design design draft',
             },
             {
-                text: 'Semi Pro design draft',
-                value: 'Semi Pro design draft',
+                text: 'Semi D2C design draft',
+                value: 'Semi D2C design draft',
             },
         ],
         onFilter: (value, record) => record.name.includes(value),
@@ -4338,7 +4772,7 @@ const getData = total => {
         const randomNumber = (i * 1000) % 199;
         data.push({
             key: '' + i,
-            name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi Pro design draft${i}.fig`,
+            name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi D2C design draft${i}.fig`,
             owner: isSemiDesign ? 'Jiang Pengzhi' : 'Hao Xuan',
             size: randomNumber,
             updateTime: new Date().valueOf() + randomNumber * DAY,
@@ -4426,8 +4860,8 @@ const columns = [
                         value: 'Semi Design design draft',
                     },
                     {
-                        text: 'Semi Pro design draft',
-                        value: 'Semi Pro design draft',
+                        text: 'Semi D2C design draft',
+                        value: 'Semi D2C design draft',
                     },
                 ],
                 onFilter: (value, record) => record.name.includes(value),
@@ -4488,7 +4922,7 @@ const getData = total => {
         const randomNumber = (i * 1000) % 199;
         data.push({
             key: '' + i,
-            name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi Pro design draft${i}.fig`,
+            name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi D2C design draft${i}.fig`,
             owner: isSemiDesign ? 'Jiang Pengzhi' : 'Hao Xuan',
             size: randomNumber,
             updateTime: new Date().valueOf() + randomNumber * DAY,
@@ -4538,7 +4972,7 @@ const getData = total => {
         const randomNumber = (i * 1000) % 199;
         data.push({
             key: '' + i,
-            name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi Pro design draft${i}.fig`,
+            name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi D2C design draft${i}.fig`,
             owner: isSemiDesign ? 'Jiang Pengzhi' : 'Hao Xuan',
             size: randomNumber,
             updateTime: new Date().valueOf() + randomNumber * DAY,
@@ -4560,8 +4994,8 @@ function Demo() {
             value: 'Semi Design design draft',
         },
         {
-            text: 'Semi Pro design draft',
-            value: 'Semi Pro design draft',
+            text: 'Semi D2C design draft',
+            value: 'Semi D2C design draft',
         },
     ];
 
@@ -4800,7 +5234,7 @@ function App() {
             const randomNumber = (i * 1000) % 199;
             data.push({
                 key: '' + i,
-                name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi Pro design draft${i}.fig`,
+                name: isSemiDesign ? `Semi Design design draft${i}.fig` : `Semi D2C design draft${i}.fig`,
                 owner: isSemiDesign ? 'Jiang Pengzhi' : 'Hao Xuan',
                 size: randomNumber,
                 updateTime: new Date().valueOf() + randomNumber * DAY,
@@ -4825,51 +5259,53 @@ render(App);
 
 ## Table
 
-| Properties | Instructions | Type | Default | Version |
-| --- | --- | --- | --- | --- |
-| bordered | Whether to display outer and column borders | boolean | false |
-| className | Outermost style name | string |  |
-| clickGroupedRowToExpand | Group content expands or collapses when the group header row is clicked | boolean |  | **0.29.0** |
-| columns | For a configuration description of the table column, see [Column](#Column) | Column [] | [] |
-| dataSource | Data | RecordType[] | [] |
-| defaultExpandAllRows | All rows are expanded by default | boolean | false |
-| defaultExpandAllGroupRows | All grouped rows are expanded by default | boolean | false | **1.30.0** |
-| defaultExpandedRowKeys | Default expansion of row key array | Array <\*> | [] |
-| empty | Content displayed when there is no data | ReactNode | ReactNode | 'No data yet. ' |
-| expandCellFixed | Whether the column of the expansion icon is fixed or not, the same value as the fixed value in Column | boolean\|string | false |
-| expandIcon | Custom expansion icon, hidden when it is `false` | boolean <br/>\|ReactNode <br/>\| (expanded: boolean) => ReactNode |  |
-| expandedRowKeys | Expanded rows, the row expansion function will be controlled when this parameter is introduced. | (string \| number)[] |  |
-| expandedRowRender | Extra unfolding lines | (record: object, index: number, expanded: boolean) => ReactNode |  |
-| expandAllRows | All rows are expanded | boolean | false | **1.30.0** |
-| expandAllGroupRows | All grouped rows are expanded | boolean | false | **1.30.0** |
-| expandRowByClick | Expand row when click row | boolean | false | **1.31.0** |
-| footer | End of form | string<br/>\|ReactNode<br/>\|(pageData: object) => string\|ReactNode |  |
-| groupBy | Grouping basis, generally a method of a key name or a return value of a string or number in the dataSource element | string\|number<br/>\|(record: any) => string\|number |  | **0.29.0** |
-| hideExpandedColumn | Whether to hide the expansion button column and turn off the rendering of the expansion button when it is turned on | boolean | true |
-| indentSize | indent size of TableCell | number | 20 |
-| loading | Table is loading or not | boolean | false |
-| pagination | Paging component configuration | boolean\|TablePaginationProps | true |
-| prefixCls | Style name prefix | string |  |
-| renderGroupSection | Header rendering method | (groupKey?: string \| number, group?: string[] \| number[]) => ReactNode |  | **0.29.0** |
-| renderPagination | Customize the rendering method of pagination. | (paginationProps?: TablePaginationProps) => ReactNode |  | **1.13.0** |
+| Properties | Instructions                                                                                                              | Type | Default | Version |
+| --- |---------------------------------------------------------------------------------------------------------------------------| --- | --- | --- |
+| bordered | Whether to display outer and column borders                                                                               | boolean | false |
+| className | Outermost style name                                                                                                      | string |  |
+| clickGroupedRowToExpand | Group content expands or collapses when the group header row is clicked                                                   | boolean |  | **0.29.0** |
+| columns | For a configuration description of the table column, see [Column](#Column)                                                | Column [] | [] |
+| components | Override the elements of Table, such as table, body, row, td, th, etc.                                                    | <a target="_blank" href="https://github.com/DouyinFE/semi-design/blob/340c93e4e1612a879be869c43ad7a9a85ab5a302/packages/semi-ui/table/interface.ts#L200">TableComponents</a> |  |
+| dataSource | Data, Each item needs to have a key, or specify rowKey, see the beginning of the document                                                                                                                      | RecordType[] | [] |
+| defaultExpandAllRows | All rows are expanded by default                                                                                          | boolean | false |
+| defaultExpandAllGroupRows | All grouped rows are expanded by default                                                                                  | boolean | false | **1.30.0** |
+| defaultExpandedRowKeys | Default expansion of row key array                                                                                        | Array <\*> | [] |
+| empty | Content displayed when there is no data                                                                                   | ReactNode | ReactNode | 'No data yet. ' |
+| expandCellFixed | Whether the column of the expansion icon is fixed or not, the same value as the fixed value in Column                     | boolean\|string | false |
+| expandIcon | Custom expansion icon, hidden when it is `false`                                                                          | boolean <br/>\|ReactNode <br/>\| (expanded: boolean) => ReactNode |  |
+| expandedRowKeys | Expanded rows, the row expansion function will be controlled when this parameter is introduced.                           | (string \| number)[] |  |
+| expandedRowRender | Extra unfolding lines                                                                                                     | (record: object, index: number, expanded: boolean) => ReactNode |  |
+| expandAllRows | All rows are expanded                                                                                                     | boolean | false | **1.30.0** |
+| expandAllGroupRows | All grouped rows are expanded                                                                                             | boolean | false | **1.30.0** |
+| expandRowByClick | Expand row when click row                                                                                                 | boolean | false | **1.31.0** |
+| footer | End of form                                                                                                               | string<br/>\|ReactNode<br/>\|(pageData: object) => string\|ReactNode |  |
+| groupBy | Grouping basis, generally a method of a key name or a return value of a string or number in the dataSource element        | string\|number<br/>\|(record: any) => string\|number |  | **0.29.0** |
+| hideExpandedColumn | Whether to hide the expansion button column and turn off the rendering of the expansion button when it is turned on       | boolean | true |
+| indentSize | indent size of TableCell                                                                                                  | number | 20 |
+| keepDOM | Whether to not destroy the collapsed DOM when folding a row                                                               | boolean | false |
+| loading | Table is loading or not                                                                                                   | boolean | false |
+| pagination | Paging component configuration                                                                                            | boolean\|TablePaginationProps | true |
+| prefixCls | Style name prefix                                                                                                         | string |  |
+| renderGroupSection | Header rendering method                                                                                                   | (groupKey?: string \| number, group?: string[] \| number[]) => ReactNode |  | **0.29.0** |
+| renderPagination | Customize the rendering method of pagination.                                                                             | (paginationProps?: TablePaginationProps) => ReactNode |  | **1.13.0** |
 | resizable | Whether to turn on the telescopic column function, the column that needs to be telescopic must provide the value of width | boolean\|[Resizable](#Resizable) | false |
-| rowExpandable | Whether the row can be expanded, turning off the rendering of the expandable button when the value is false | (record: RecordType): => boolean | () => true | **0.27.0** |
-| rowKey | The value of the table row key, which can be a string or a function. | string \| (record: RecordType) => string | 'key' |
-| rowSelection | See [rowSelection](#rowSelection) | object | null |
-| scroll | Whether the table is scrollable, configure the width or height of the scroll area, see [scroll](#scroll) | object | - |
-| showHeader | Does it show the header? | boolean | true |
-| size | Table size, will effect the `padding` of the rows | "default"\|"middle"\|"small" | "default" | **1.0.0** |
-| sticky | fixed header | boolean \| { top: number } | false | **2.21.0** |
-| title | Table Title | string<br/>\|ReactNode<br/>\|(pageData: RecordType[]) => string\|ReactNode |  |
-| virtualized | Virtualization settings | Virtualized | false | **0.33.0** |
-| virtualized.itemSize | Row height | number\|(index: number) => number | 56 | **0.33.0** |
-| virtualized.onScroll | Virtualization scroll callback method | ( scrollDirection?: 'forward' \| 'backward', scrollOffset?: number, scrollUpdateWasRequested?: boolean ) => void |  | **0.33.0** |
-| onChange | Trigger when paging, sorting, filtering changes | ({ pagination: TablePaginationProps, <br/>filters: Array<\*>, sorter: object, extra: any }) => void |  |
-| onExpand | Trigger when clicking on the row expansion icon | (expanded: boolean, record: RecordType, DOMEvent: MouseEvent) => void |  | The third parameter DOMEvent requires version **>=0.28.0** |
-| onExpandedRowsChange | Triggers when unfolding row changes | (rows: RecordType[]) => void |  |
-| onGroupedRow | Similar to onRow, but this parameter is used to define the row attribute of the grouping header alone | (record: RecordType, index: number) => object |  | **0.29.0** |
-| onHeaderRow | Set the header row property, and the returned object is merged to the header line | (columns: Column[], index: number) => object |  |
-| onRow | Set the row property, and the returned object is merged to the table row | (record: RecordType, index: number) => object |  |
+| rowExpandable | Whether the row can be expanded, turning off the rendering of the expandable button when the value is false               | (record: RecordType): => boolean | () => true | **0.27.0** |
+| rowKey | The value of the table row key, which can be a string or a function.                                                      | string \| (record: RecordType) => string | 'key' |
+| rowSelection | See [rowSelection](#rowSelection)                                                                                         | object | null |
+| scroll | Whether the table is scrollable, configure the width or height of the scroll area, see [scroll](#scroll)                  | object | - |
+| showHeader | Does it show the header?                                                                                                  | boolean | true |
+| size | Table size, will effect the `padding` of the rows                                                                         | "default"\|"middle"\|"small" | "default" | **1.0.0** |
+| sticky | fixed header                                                                                                              | boolean \| { top: number } | false | **2.21.0** |
+| title | Table Title                                                                                                               | string<br/>\|ReactNode<br/>\|(pageData: RecordType[]) => string\|ReactNode |  |
+| virtualized | Virtualization settings                                                                                                   | Virtualized | false | **0.33.0** |
+| virtualized.itemSize | Row height                                                                                                                | number\|(index: number) => number | 56 | **0.33.0** |
+| virtualized.onScroll | Virtualization scroll callback method                                                                                     | ( scrollDirection?: 'forward' \| 'backward', scrollOffset?: number, scrollUpdateWasRequested?: boolean ) => void |  | **0.33.0** |
+| onChange | Trigger when paging, sorting, filtering changes                                                                           | ({ pagination: TablePaginationProps, <br/>filters: Array<\*>, sorter: object, extra: any }) => void |  |
+| onExpand | Trigger when clicking on the row expansion icon                                                                           | (expanded: boolean, record: RecordType, DOMEvent: MouseEvent) => void |  | The third parameter DOMEvent requires version **>=0.28.0** |
+| onExpandedRowsChange | Triggers when unfolding row changes                                                                                       | (rows: RecordType[]) => void |  |
+| onGroupedRow | Similar to onRow, but this parameter is used to define the row attribute of the grouping header alone                     | (record: RecordType, index: number) => object |  | **0.29.0** |
+| onHeaderRow | Set the header row property, and the returned object is merged to the header line                                         | (columns: Column[], index: number) => object |  |
+| onRow | Set the row property, and the returned object is merged to the table row                                                  | (record: RecordType, index: number) => object |  |
 
 Some of the type definitions used above:
 
@@ -4996,10 +5432,13 @@ import { Table } from '@douyinfe/semi-ui';
 | fixed | Whether the column is fixed, optional true (equivalent to left) 'left' 'right' | boolean\|string | false |
 | key | The key required by React, if a unique dataIndex has been set, can ignore this property | string |  |
 | render | A rendering function that generates complex data, the parameters are the value of the current row, the current row data, the row index, and the table row / column merge can be set in return object | (text: any, record: RecordType, index: number, { expandIcon?: ReactNode, selection?: ReactNode, indentText?: ReactNode }) => React\|object |  |
+| renderFilterDropdown | Custom filter dropdown panel, for usage details, see [Custom Filter Rendering](#Custom-Filter-Rendering) | (props?: RenderFilterDropdownProps) => React.ReactNode; | - | **2.52.0** |
 | renderFilterDropdownItem | Customize the rendering method of each filter item. For usage details, see [Custom Filter Item Rendering](#Custom-Filter-Item-Rendering) | ({ value: any, text: any, onChange: Function, level: number, ...otherProps }) => ReactNode | - | **1.1.0** |
+| resize | Whether to enable resize mode, this property will take effect only after Table resizable is enabled | boolean |  | **2.42.0** |
 | sortChildrenRecord | Whether to sort child data locally | boolean |  | **0.29.0** |
 | sortOrder | The controlled property of the sorting, the sorting of this control column can be set to 'ascend'\|'descended '\|false | boolean | false |
-| sorter | Sorting function, local sorting uses a function (refer to the compreFunction of Array.sort), requiring a server-side sorting can be set to true | boolean\|(r1: RecordType, r2: RecordType) => number | true |
+| sorter | Sorting function, local sorting uses a function (refer to the compareFunction of Array.sort), requiring a server-side sorting can be set to true | boolean\|(r1: RecordType, r2: RecordType, sortOrder: 'ascend' \| 'descend') => number | true |
+| sortIcon |Customize the sort icon. The returned node controls the entire sort button, including ascending and descending buttons. Need to control highlighting behavior based on sortOrder | (props: { sortOrder }) => ReactNode | | **2.50.0** |
 | title | Column header displays text. When a function is passed in, title will use the return value of the function; when other types are passed in, they will be aggregated with sorter and filter. It needs to be used with useFullRender to obtain parameters such as filter in the function type | string \| ReactNode\|({ filter: ReactNode, sorter: ReactNode, selection: ReactNode }) => ReactNode. |  | Function type requires **0.34.0** |
 | useFullRender | Whether to completely customize the rendering, see [Full Custom Rendering](#Fully-custom-rendering) for usage details, enabling this feature will cause a certain performance loss | boolean | false | **0.34.0** |
 | width | Column width | string \| number |  |
@@ -5030,6 +5469,7 @@ type Filter = {
 | getCheckboxProps | Default property configuration for the selection box | (record: RecordType) => object |  |  |
 | hidden | Hide selection column or not | boolean | false | **0.34.0** |
 | selectedRowKeys | Specifies the key array of the selected item, which needs to work with onChange | string [] |  |  |
+| renderCell         | Custom rendering checkbox                                                                                 | ({ selected: boolean, record: RecordType, originNode: JSX.Element, inHeader: boolean, disabled: boolean, indeterminate: boolean, index?: number, selectRow?: (selected: boolean, e: Event) => void, selectAll?: (selected: boolean, e: Event) => void }) => ReactNode |        |      **2.52.0**      |
 | width | Custom list selection box width | string | number |  |
 | onChange | A callback in the event of a change in the selected item. The first parameter will save the row keys selected last time, even if you do paging control or update the dataSource [FAQ](#faq) | (selectedRowKeys: number[]\|string[], selectedRows: RecordType[]) => void |  |  |
 | onSelect | Callback when the user manually clicks the selection box of a row | (record: RecordType, selected: boolean, selectedRows: RecordType[], nativeEvent: MouseEvent) => void |  |  |

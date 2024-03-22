@@ -207,12 +207,13 @@ function Demo() {
 ```
 ### 触发时机
 
--   配置触发展示的时机，默认为 `hover`，可选 `hover`/`focus`/`click`/`custom`
+-   配置触发展示的时机，默认为 `hover`，可选 `hover`/`focus`/`click`/`custom`/ 'contextMenu' 
 -   设为 `custom` 时，需要配合 `visible` 属性使用，此时显示与否完全受控
+-   contextMenu 右键触发在 v 2.42.0 后开始提供
 
 ```jsx live=true hideInDSM
 import React, { useState } from 'react';
-import { Tooltip, Button, ButtonGroup, Input } from '@douyinfe/semi-ui';
+import { Tooltip, Button, Input, RadioGroup, Radio } from '@douyinfe/semi-ui';
 
 function Demo() {
     const [visible, setVisible] = useState(false);
@@ -223,7 +224,7 @@ function Demo() {
         <div style={{ width: '100%', height: '100%', overflow: 'hidden', position: 'relative' }} id="tooltip-container">
             <div style={{ width: '150%', height: '150%', paddingLeft: 50, paddingTop: 50 }}>
                 <Tooltip content={'hi bytedance'} getPopupContainer={getPopupContainer}>
-                    <Button style={{ marginBottom: 20 }}>悬停显示</Button>
+                    <Button theme='solid' type='tertiary' style={{ marginBottom: 20 }}>悬停显示</Button>
                 </Tooltip>
                 <br />
                 <Tooltip content={'hi bytedance'} trigger="click" getPopupContainer={getPopupContainer}>
@@ -234,6 +235,10 @@ function Demo() {
                     <Input style={{ width: 100, marginBottom: 20 }} placeholder="聚焦显示" />
                 </Tooltip>
                 <br />
+                <Tooltip content={'hi bytedance'} trigger="contextMenu" getPopupContainer={getPopupContainer}>
+                    <Button theme='solid' type='secondary' style={{ marginBottom: 20 }}>右键点击展示</Button>
+                </Tooltip>
+                <br />
                 <Tooltip
                     content={'hi bytedance'}
                     trigger="custom"
@@ -241,10 +246,10 @@ function Demo() {
                     getPopupContainer={getPopupContainer}
                 >
                     <span style={{ display: 'inline-block' }}>
-                        <ButtonGroup>
-                            <Button onClick={() => setVisible(true)}>受控显示</Button>
-                            <Button onClick={() => setVisible(false)}>受控隐藏</Button>
-                        </ButtonGroup>
+                        <RadioGroup type='button' onChange={(e) => setVisible(e.target.value)} value={visible}>
+                            <Radio value={true}>受控显示</Radio>
+                            <Radio value={false}>受控隐藏</Radio>
+                        </RadioGroup>
                     </span>
                 </Tooltip>
             </div>
@@ -278,7 +283,7 @@ import { Tooltip, Tag } from '@douyinfe/semi-ui';
 ```
 ### 渲染至指定 DOM
 
-传入 `getPopupContainer`，弹层将会渲染至该函数返回的 DOM 中。
+传入 `getPopupContainer`，弹层将会渲染至该函数返回的 DOM 中。 这会改变浮层 DOM 树位置，但不会改变视图渲染位置。
 
 **需要注意的是：** 返回的容器如果不是 `document.body`，**`position` 需要设为 `"relative"`**（版本 >= 0.18.0）。
 
@@ -361,36 +366,36 @@ function Demo() {
 
 ---
 
-| 属性 | 说明 | 类型 | 默认值 | 版本 |
-| --- | --- | --- | --- | --- |
-| autoAdjustOverflow | 弹出层被遮挡时是否自动调整方向 | boolean | true |  |
-| arrowPointAtCenter | “小三角”是否指向元素中心，需要同时传入"showArrow=true" | boolean | true | **0.34.0** |
-| content | 弹出层内容 | string\|ReactNode |  |  |
-| className | 弹出层的样式名 | string |  |  |
-| clickToHide | 点击弹出层及内部任一元素时是否自动关闭弹层 | boolean | false | **0.24.0** |
-| disableFocusListener | trigger为`hover`时，不响应键盘聚焦弹出浮层事件，详见[issue#977](https://github.com/DouyinFE/semi-design/issues/977) | boolean | false | **2.17.0** |
-| getPopupContainer | 指定父级 DOM，弹层将会渲染至该 DOM 中，自定义需要设置 `position: relative` | function():HTMLElement | () => document.body |  |
-| keepDOM | 关闭时是否保留内部组件不销毁 | boolean | false | **2.31.0** |
-| margin | 计算溢出时的增加的冗余值，详见[issue#549](https://github.com/DouyinFE/semi-design/issues/549) | number ｜ <ApiType detail='{ marginLeft: number; marginTop: number; marginRight: number; marginBottom: number }'>MarginObject</ApiType> | 0 |  **2.23.0**|
-| mouseEnterDelay | 鼠标移入后，延迟显示的时间，单位毫秒（仅当 trigger 为 hover/focus 时生效） | number | 50 |  |
-| mouseLeaveDelay | 鼠标移出后，延迟消失的时间，单位毫秒（仅当 trigger 为 hove/focus 时生效），不小于 mouseEnterDelay | number | 50 |  |
-| motion | 是否展示弹出层动画 | boolean | true |  |
+| 属性 | 说明                                                                                                                                                   | 类型 | 默认值 | 版本 |
+| --- |------------------------------------------------------------------------------------------------------------------------------------------------------| --- | --- | --- |
+| autoAdjustOverflow | 弹出层被遮挡时是否自动调整方向                                                                                                                                      | boolean | true |  |
+| arrowPointAtCenter | “小三角”是否指向元素中心，需要同时传入"showArrow=true"                                                                                                                 | boolean | true |  |
+| content | 弹出层内容                                                                                                                                                | string\|ReactNode |  |  |
+| className | 弹出层的样式名                                                                                                                                              | string |  |  |
+| clickToHide | 点击弹出层及内部任一元素时是否自动关闭弹层                                                                                                                                | boolean | false |  |
+| disableFocusListener | trigger为`hover`时，不响应键盘聚焦弹出浮层事件，详见[issue#977](https://github.com/DouyinFE/semi-design/issues/977)                                                     | boolean | false | **2.17.0** |
+| getPopupContainer | 指定父级 DOM，弹层将会渲染至该 DOM 中，自定义需要设置 `position: relative` 这会改变浮层 DOM 树位置，但不会改变视图渲染位置。                                                                                                 | function():HTMLElement | () => document.body |  |
+| keepDOM | 关闭时是否保留内部组件不销毁                                                                                                                                       | boolean | false | **2.31.0** |
+| margin | 计算溢出时的增加的冗余值，详见[issue#549](https://github.com/DouyinFE/semi-design/issues/549)                                                                       | number ｜ <ApiType detail='{ marginLeft: number; marginTop: number; marginRight: number; marginBottom: number }'>MarginObject</ApiType> | 0 |  **2.23.0**|
+| mouseEnterDelay | 鼠标移入后，延迟显示的时间，单位毫秒（仅当 trigger 为 hover/focus 时生效）                                                                                                     | number | 50 |  |
+| mouseLeaveDelay | 鼠标移出后，延迟消失的时间，单位毫秒（仅当 trigger 为 hove/focus 时生效），不小于 mouseEnterDelay                                                                                  | number | 50 |  |
+| motion | 是否展示弹出层动画                                                                                                                                            | boolean | true |  |
 | position | 弹出层展示位置，可选值：`top`, `topLeft`, `topRight`, `left`, `leftTop`, `leftBottom`, `right`, `rightTop`, `rightBottom`, `bottom`, `bottomLeft`, `bottomRight` | string | 'top' |  |
-| prefixCls | 弹出层 wrapper div 的 `className` 前缀，设置该项时，弹出层将不再带 Tooltip 的样式 | string | 'semi-tooltip' |  |
-| preventScroll | 指示浏览器是否应滚动文档以显示新聚焦的元素，作用于组件内的 focus 方法 | boolean |  |  |
-| rePosKey | 可以更新该项值手动触发弹出层的重新定位 | string\|number |  |  |
-| style    | 弹出层的内联样式 | object |  |  |
-| spacing | 弹出层与 `children` 元素的距离，单位 px | number | 8 |  |
-| showArrow | 是否显示箭头三角形 | boolean | true |  |
-| stopPropagation | 是否阻止弹层上的点击事件冒泡 | boolean | false | **0.34.0** |
-| transformFromCenter | 是否从包裹的元素水平或垂直中心处变换，该参数仅影响动效变换的 `transform-origin`，一般无需改动 | boolean | true |  |
-| trigger | 触发展示的时机，可选值：`hover` / `focus` / `click` / `custom` | string | 'hover' |  |
-| visible | 是否展示弹出层 | boolean |  |  |
-| wrapperClassName | 当 children 为 disabled ，或者 children 为多个元素时，外层将会包裹一层 span 元素，该 api 用于设置此 span 的样式类名 | string |  | **1.32.0** |
-| wrapperId | 弹出层 wrapper 节点的 id，trigger 的 aria 属性指向此 id，若不设置组件会随机生成一个 id | string |  | 2.11.0  |
-| zIndex | 弹层层级 | number | 1060 |  |
-| onVisibleChange | 弹出层展示/隐藏时触发的回调 | function(isVisible:boolean) |  |  |
-| onClickOutSide | 当弹出层处于展示状态，点击非Children、非浮层内部区域时的回调（仅trigger为custom、click时有效）| function(e:event) |  | **2.1.0** |
+| prefixCls | 弹出层 wrapper div 的 `className` 前缀，设置该项时，弹出层将不再带 Tooltip 的样式                                                                                           | string | 'semi-tooltip' |  |
+| preventScroll | 指示浏览器是否应滚动文档以显示新聚焦的元素，作用于组件内的 focus 方法                                                                                                               | boolean |  |  |
+| rePosKey | 可以更新该项值手动触发弹出层的重新定位                                                                                                                                  | string\|number |  |  |
+| style    | 弹出层的内联样式                                                                                                                                             | object |  |  |
+| spacing | 弹出层与 `children` 元素的距离，单位 px（object类型自 v2.45后支持）                                                                                                                     | number ｜ <ApiType detail='{ x: number; y: number }'>SpacingObject</ApiType>  | 8 |  |
+| showArrow | 是否显示箭头三角形                                                                                                                                            | boolean | true |  |
+| stopPropagation | 是否阻止弹层上的点击事件冒泡                                                                                                                                       | boolean | false | **0.34.0** |
+| transformFromCenter | 是否从包裹的元素水平或垂直中心处变换，该参数仅影响动效变换的 `transform-origin`，一般无需改动                                                                                             | boolean | true |  |
+| trigger | 触发展示的时机，可选值：`hover` / `focus` / `click` / `custom` / `contextMenu` (v2.42后提供)                                                                                                   | string | 'hover' |  |
+| visible | 是否展示弹出层                                                                                                                                              | boolean |  |  |
+| wrapperClassName | 当 children 为 disabled ，或者 children 为多个元素时，外层将会包裹一层 span 元素，该 api 用于设置此 span 的样式类名                                                                    | string |  |  |
+| wrapperId | 弹出层 wrapper 节点的 id，trigger 的 aria 属性指向此 id，若不设置组件会随机生成一个 id                                                                                          | string |  | 2.11.0  |
+| zIndex | 弹层层级                                                                                                                                                 | number | 1060 |  |
+| onVisibleChange | 弹出层展示/隐藏时触发的回调                                                                                                                                       | function(isVisible:boolean) |  |  |
+| onClickOutSide | 当弹出层处于展示状态，点击非Children、非浮层内部区域时的回调（仅trigger为custom、click时有效）                                                                                         | function(e:event) |  | **2.1.0** |
 
 ## Accessibility
 

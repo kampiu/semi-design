@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import React from 'react';
 import cls from 'classnames';
 import PropTypes from 'prop-types';
@@ -15,6 +14,7 @@ import ConfigContext, { ContextValue } from '../configProvider/context';
 import LocaleConsumer from '../locale/localeConsumer';
 import { Locale as LocaleObject } from '../locale/interface';
 import '@douyinfe/semi-foundation/popconfirm/popconfirm.scss';
+import { getDefaultPropsFromGlobalConfig } from "../_utils";
 
 export interface PopconfirmProps extends PopoverProps {
     cancelText?: string;
@@ -32,6 +32,7 @@ export interface PopconfirmProps extends PopoverProps {
     prefixCls?: string;
     zIndex?: number;
     trigger?: Trigger;
+    showCloseIcon?: boolean;
     position?: Position;
     onCancel?: (e: React.MouseEvent) => Promise<any> | void;
     onConfirm?: (e: React.MouseEvent) => Promise<any> | void;
@@ -59,7 +60,7 @@ export default class Popconfirm extends BaseComponent<PopconfirmProps, Popconfir
         prefixCls: PropTypes.string,
         className: PropTypes.string,
         style: PropTypes.object,
-        icon: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+        icon: PropTypes.node,
         okText: PropTypes.string,
         okType: PropTypes.string,
         cancelText: PropTypes.string,
@@ -73,13 +74,16 @@ export default class Popconfirm extends BaseComponent<PopconfirmProps, Popconfir
         okButtonProps: PropTypes.object,
         cancelButtonProps: PropTypes.object,
         stopPropagation: PropTypes.oneOfType([PropTypes.bool, PropTypes.string]),
+        showCloseIcon: PropTypes.bool,
         zIndex: PropTypes.number,
         // private
         trigger: PropTypes.string,
         position: PropTypes.string,
     };
 
-    static defaultProps = {
+    static __SemiComponentName__ = "Popconfirm";
+
+    static defaultProps = getDefaultPropsFromGlobalConfig(Popconfirm.__SemiComponentName__, {
         stopPropagation: true,
         trigger: 'click',
         // position: 'bottomLeft',
@@ -90,10 +94,11 @@ export default class Popconfirm extends BaseComponent<PopconfirmProps, Popconfir
         cancelType: 'tertiary',
         prefixCls: cssClasses.PREFIX,
         zIndex: numbers.DEFAULT_Z_INDEX,
+        showCloseIcon: true,
         onCancel: noop,
         onConfirm: noop,
         onClickOutSide: noop,
-    };
+    });
 
     footerRef: React.RefObject<HTMLDivElement | null>;
     popoverRef: React.RefObject<Popover | null>;
@@ -192,7 +197,7 @@ export default class Popconfirm extends BaseComponent<PopconfirmProps, Popconfir
     }
 
     renderConfirmPopCard = ({ initialFocusRef }: { initialFocusRef?: RenderContentProps<any>['initialFocusRef'] }) => {
-        const { content, title, className, style, cancelType, icon, prefixCls } = this.props;
+        const { content, title, className, style, cancelType, icon, prefixCls, showCloseIcon } = this.props;
         const { direction } = this.context;
         const popCardCls = cls(
             prefixCls,
@@ -204,14 +209,18 @@ export default class Popconfirm extends BaseComponent<PopconfirmProps, Popconfir
         const showTitle = title !== null && typeof title !== 'undefined';
         const showContent = !(content === null || typeof content === 'undefined');
 
+        const hasIcon = React.isValidElement(icon);
+        const bodyCls = cls({
+            [`${prefixCls}-body`]: true,
+            [`${prefixCls}-body-withIcon`]: hasIcon
+        });
+
         return (
             /* eslint-disable-next-line jsx-a11y/no-static-element-interactions */
             <div className={popCardCls} onClick={this.stopImmediatePropagation} style={style}>
                 <div className={`${prefixCls}-inner`}>
                     <div className={`${prefixCls}-header`}>
-                        <i className={`${prefixCls}-header-icon`} x-semi-prop="icon">
-                            {React.isValidElement(icon) ? icon : null}
-                        </i>
+                        { hasIcon ? <i className={`${prefixCls}-header-icon`} x-semi-prop="icon">{icon}</i> : null}
                         <div className={`${prefixCls}-header-body`}>
                             {showTitle ? (
                                 <div className={`${prefixCls}-header-title`} x-semi-prop="title">
@@ -219,17 +228,22 @@ export default class Popconfirm extends BaseComponent<PopconfirmProps, Popconfir
                                 </div>
                             ) : null}
                         </div>
-                        <Button
-                            className={`${prefixCls}-btn-close`}
-                            icon={<IconClose />}
-                            size="small"
-                            theme={'borderless'}
-                            type={cancelType}
-                            onClick={this.handleCancel}
-                        />
+                        {
+                            showCloseIcon ? (
+                                <Button
+                                    className={`${prefixCls}-btn-close`}
+                                    icon={<IconClose />}
+                                    size="small"
+                                    theme={'borderless'}
+                                    type={cancelType}
+                                    onClick={this.handleCancel}
+                                />
+                            ) : null
+                        }
+
                     </div>
                     {showContent ? (
-                        <div className={`${prefixCls}-body`} x-semi-prop="content">
+                        <div className={bodyCls} x-semi-prop="content">
                             {isFunction(content) ? content({ initialFocusRef }) : content}
                         </div>
                     ) : null}

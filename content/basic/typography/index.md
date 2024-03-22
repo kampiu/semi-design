@@ -1,6 +1,6 @@
 ---
 localeCode: zh-CN
-order: 18
+order: 19
 category: 基础
 title:  Typography 版式
 icon: doc-typography
@@ -215,10 +215,10 @@ function Demo() {
 
     function Infos() {
         const data = [
-            { type: 'Stars', min: '6700' },
-            { type: 'Fork', min: '500' },
-            { type: 'Downloads', min: '3000000' },
-            { type: 'Contributors', min: '90' }
+            { type: 'Stars', min: '7100' },
+            { type: 'Fork', min: '560' },
+            { type: 'Downloads', min: '5000000' },
+            { type: 'Contributors', min: '100' }
         ];
         return data.map(item =>
             <p key={item.min}>
@@ -306,15 +306,19 @@ function Demo() {
     1. ellipsis 仅支持纯文本的截断，不支持 reactNode 等复杂类型，请确保 children 传入内容类型为 string <br/>
     2. ellipsis 要实现缩略，需要有明确的 width或 maxWidth 宽度限制做对比判断。若自身未设置宽度（例如纯依靠 flex 属性撑开），或 width为 100% 等不定数值，那么父级需要有明确的 width或 maxWidth <br/>
     3. ellipsis 需要获取 DOM 的宽高度等信息用以做基本判断，若自身或父级存在 display:none 样式会导致取值不正确，此时缩略会失效<br/>
+    4. 省略文本的计算，分为CSS 截断和 JS 截断，强依赖 DOM 元素的相关状态获取。在结构复杂的页面，大量使用 Typography 可能会导致过多的 reflow 重排，建议选择合适的省略方式避免造成性能负担。更多信息见 <a href="#faq">FAQ</a> 
 </Notice>
 
 
 ```jsx live=true
 import React from 'react';
-import { Typography } from '@douyinfe/semi-ui';
+import { Typography, Tooltip } from '@douyinfe/semi-ui';
 
 function Demo() {
     const { Paragraph, Title, Text } = Typography;
+    const customRenderTooltip = useCallback((content, children) => {
+        return <Tooltip content={content} style={{ backgroundColor: 'var(--semi-color-primary)' }}>{children}</Tooltip>;
+    }, []);
 
     return (
         <div>
@@ -365,6 +369,18 @@ function Demo() {
             >
                 sssssssssssssssssssssssss
             </Text>
+            <br/><br/>
+            <Title 
+                heading={5} 
+                ellipsis={{ 
+                    showTooltip: {
+                        renderTooltip: customRenderTooltip
+                    }
+                }} 
+                style={{ width: 250 }}
+            >
+                这是一个自定义弹出层组件的省略文本，背景色是蓝色
+            </Title>
         </div>
     );
 }
@@ -518,7 +534,7 @@ function Demo() {
 | expandable   | 是否支持展开                                                                                                      | boolean                                             | false  |
 | pos          | 省略截断的位置，支持末尾和中间截断：`end`, `middle`                                                               | string                                              | `end`  |
 | rows         | 省略溢出行数                                                                                                      | number                                              | 1      |
-| showTooltip  | 是否展示 tooltip 及相关配置: type，浮层内容承载的组件，支持 Tooltip\| Popover；opts，其他需要透传给浮层组件的属性 | boolean\|{type: 'tooltip'\|'popover', opts: object} | false  |
+| showTooltip  | 是否展示 tooltip 及相关配置: type，浮层内容承载的组件，支持 Tooltip\| Popover；opts，其他需要透传给浮层组件的属性； renderTooltip，自定义渲染弹出层组件 | boolean\|{type: 'tooltip'\|'popover', opts: object, renderTooltip: (content: ReactNode, children: ReactNode) => ReactNode} | false  |
 | suffix       | 始终展示的后缀                                                                                                    | string                                              | -      |
 | onExpand     | 展开/收起的回调                                                                                                   | function(expanded: bool, Event: e)                  | -      |
 
@@ -570,3 +586,13 @@ function Demo() {
 
 ## 设计变量
 <DesignToken/>
+
+## FAQ
+
+- **Typography 省略具体机制及注意事项?**
+
+    Semi 截断有两种策略， CSS 截断和 JS 截断。当设置中间截断（pos='middle')、可展开（expandable)、有后缀（suffix 非空）、可复制（copyable），启用 JS 截断策略；非以上场景，启用 CSS 截断策略。
+
+    通常来说，CSS 截断性能优于 JS 截断。在 children、 容器尺寸不变的情况下，CSS 截断只涉及 1~2 次计算，js 截断可能涉及多次计算。
+
+    同时使用大量带有截断功能的 Typography 需注意性能消耗，如在 Table 中，可通过设置合理的页容量进行分页减少性能损耗。

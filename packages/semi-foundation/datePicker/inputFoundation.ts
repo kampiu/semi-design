@@ -1,5 +1,4 @@
-/* eslint-disable max-len */
-import { cloneDeep, isObject, set, get } from 'lodash';
+import { isObject, set, get } from 'lodash';
 import { format as formatFn } from 'date-fns';
 
 import BaseFoundation, { DefaultAdapter } from '../base/foundation';
@@ -12,6 +11,7 @@ import { strings } from './constants';
 import getDefaultPickerDate from './_utils/getDefaultPickerDate';
 import { compatibleParse } from './_utils/parser';
 import { isValidDate } from './_utils';
+import copy from 'fast-copy';
 
 const KEY_CODE_ENTER = 'Enter';
 const KEY_CODE_TAB = 'Tab';
@@ -111,10 +111,8 @@ export default class InputFoundation extends BaseFoundation<DateInputAdapter> {
         super({ ...adapter });
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     init() {}
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     destroy() {}
 
     handleClick(e: any) {
@@ -192,18 +190,20 @@ export default class InputFoundation extends BaseFoundation<DateInputAdapter> {
 
     handleInsetInputChange(options: InsetInputChangeFoundationProps) {
         const { value, valuePath, insetInputValue } = options;
-        const { format, type } = this._adapter.getProps();
+        const { format, type, rangeSeparator } = this._adapter.getProps();
         const insetFormatToken = getInsetInputFormatToken({ type, format });
-        let newInsetInputValue = set(cloneDeep(insetInputValue), valuePath, value);
-        newInsetInputValue = this._autoFillTimeToInsetInputValue({ insetInputValue: newInsetInputValue, valuePath, format: insetFormatToken });
-        const newInputValue = this.concatInsetInputValue({ insetInputValue: newInsetInputValue });
-        this._adapter.notifyInsetInputChange({ insetInputValue: newInsetInputValue, format: insetFormatToken, insetInputStr: newInputValue });
+        const newInsetInputValue = set(copy(insetInputValue), valuePath, value);
+        const insetInputStr = this.concatInsetInputValue({ insetInputValue: newInsetInputValue });
+        const parsedInsetInputValueFromInputStr = getInsetInputValueFromInsetInputStr({ inputValue: insetInputStr, type, rangeSeparator });
+        const filledTimeInsetInputValue = this._autoFillTimeToInsetInputValue({ insetInputValue: parsedInsetInputValueFromInputStr, valuePath, format: insetFormatToken });
+        const finalInsetInputStr = this.concatInsetInputValue({ insetInputValue: filledTimeInsetInputValue });
+        this._adapter.notifyInsetInputChange({ insetInputValue: filledTimeInsetInputValue, format: insetFormatToken, insetInputStr: finalInsetInputStr });
     }
 
     _autoFillTimeToInsetInputValue(options: { insetInputValue: InsetInputValue; format: string; valuePath: string}) {
         const { valuePath, insetInputValue, format } = options;
         const { type, defaultPickerValue, dateFnsLocale } = this._adapter.getProps();
-        const insetInputValueWithTime = cloneDeep(insetInputValue);
+        const insetInputValueWithTime = copy(insetInputValue);
         const { nowDate, nextDate } = getDefaultPickerDate({ defaultPickerValue, format, dateFnsLocale });
 
         if (type.includes('Time')) {

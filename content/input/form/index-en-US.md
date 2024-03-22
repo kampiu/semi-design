@@ -982,7 +982,7 @@ class ModalFormDemo extends React.Component {
         this.formApi = formApi;
     }
 
-    render(){
+    render() {
         const { visible } = this.state;
         let message = 'Required';
         return (
@@ -1066,51 +1066,53 @@ class ModalFormDemo extends React.Component {
 -   You can configure check rules for each Field through `rules`  
      The verification library inside the Form is based on `async-validator`, and more configuration rules can be found in its [official documentation](https://github.com/yiminghe/async-validator)
 -   You can uniformly set the initial value for the entire form through the `initValues` of form, or you can set the initial value through `initValue` in each field (the latter has a higher priority)
+-   You can configure different verification trigger timings for each Field through `trigger`, and the default is `change` (that is, when onChange is triggered, the verification is performed automatically). Also supports `change`, `blur`, `mount`, `custom` or a combination of the above. After v2.42, it supports unified configuration through FormProps. If both are configured, FieldProps shall prevail
+-   You can use the `stopValidateWithError`` switch to decide whether to continue to trigger the validation of subsequent rules when the first rule that fails the validation is encountered. After v2.42, unified configuration through FormProps is supported. If both are configured, FieldProps shall prevail
+
 
 ```jsx live=true dir="column"
 import React from 'react';
-import { Form } from '@douyinfe/semi-ui';
+import { Form, Button } from '@douyinfe/semi-ui';
 
-class BasicDemoWithInit extends React.Component {
-    constructor() {
-        super();
-        this.state = {
-            initValues: {
-                name: 'semi',
-                role: 'rd'
-            }
-        };
-        this.getFormApi = this.getFormApi.bind(this);
-    }
+() => {
+    
+    const initValues = {
+        name: 'semi',
+        shortcut: 'se'
+    };
+    
+    const style = { width: '100%' };
+    
+    const { Select, Input } = Form;
 
-    getFormApi(formApi) { this.formApi = formApi; }
-
-    render() {
-        const { Select, Input } = Form;
-        const style = { width: '100%' };
-        return (
-            <Form initValues={this.state.initValues}>
-                <Input
-                    field="name"
-                    label="Name（Input）"
-                    style={style}
-                    trigger='blur'
-                    rules={[
-                        { required: true, message: 'required error' },
-                        { type: 'string', message: 'type error' },
-                        { validator: (rule, value) => value === 'muji', message: 'not muji' }
-                    ]}
-                />
-                <Select field="role" style={style} label='Role' placeholder='Choose Role' initValue={'pm'}>
-                    <Select.Option value="qa">Quality Assurance</Select.Option>
-                    <Select.Option value="rd">Software Engineer</Select.Option>
-                    <Select.Option value="pm">Product Manager</Select.Option>
-                    <Select.Option value="ued">Designer</Select.Option>
-                </Select>
-            </Form>
-        );
-    }
-}
+    return (
+        <Form initValues={initValues}>
+            <Input
+                field="name"
+                style={style}
+                trigger='blur'
+                rules={[
+                    { required: true, message: 'required error' },
+                    { type: 'string', message: 'type error' },
+                    { validator: (rule, value) => value === 'semi', message: 'should be semi' },
+                    { validator: (rule, value) => value && value.startsWith('se'), message: 'should startsWith se' }
+                ]}
+            />
+            <Input
+                field="shortcut"
+                style={style}
+                stopValidateWithError
+                rules={[
+                    { required: true, message: 'required error' },
+                    { type: 'string', message: 'type error' },
+                    { validator: (rule, value) => value === 'semi', message: 'should be semi' },
+                    { validator: (rule, value) => value && value.startsWith('se'), message: 'should startsWith se' }
+                ]}
+            />
+            <Button htmlType='submit'>提交</Button>
+        </Form>
+    );
+};
 ```
 
 ### Custom Validate (Form Level)
@@ -1415,13 +1417,13 @@ import { Form, Button } from '@douyinfe/semi-ui';
 );
 ```
 
-#### Add or delete form items dynamically - by use ArrayField
+### ArrayField Usage
 
 For array items that are dynamically added or deleted, we provide the `ArrayField` component to simplify the operation of add / remove
 
 For the detailed API of ArrayField, please refer to [ArrayField Props](#arrayfield-props) below
 
-Note: The initValue type of ArrayField must be an array
+> Note: The initValue type of ArrayField must be an array
 
 ```jsx live=true dir="column"
 import React from 'react';
@@ -1495,6 +1497,156 @@ class ArrayFieldDemo extends React.Component {
 ```
 
 
+#### Nesting ArrayField
+
+ArrayField supports multi-level nesting. The following is an example of two-level nesting.
+
+```jsx live=true dir="column" noInline=true
+import { Form, ArrayField, Button, Card, Typography, } from "@douyinfe/semi-ui";
+import { IconPlusCircle, IconMinusCircle } from "@douyinfe/semi-icons";
+import React from "react";
+
+const initValue = {
+    group: [
+        {
+            name: "Email filtering rule 1",
+            rules: [
+                { itemName: "Sender address", type: "include" },
+                { itemName: "Email Title", type: "exclude" },
+            ],
+        },
+        {
+            name: "Email filtering rule 2",
+            rules: [
+                { itemName: "Send time", type: "include" }
+            ],
+        },
+    ]
+};
+
+const NestedField = (props) => {
+    const rowStyle = {
+        marginTop: 12,
+        marginLeft: 12,
+    };
+    return (
+        <ArrayField field={`${props.field}.rules`}>
+            {({ add, arrayFields, addWithInitValue }) => (
+                <React.Fragment>
+                    {arrayFields.map(({ field, key, remove }, i) => (
+                        <div style={{ display: "flex" }} key={key}>
+                            <Form.Input
+                                field={`${field}[itemName]`}
+                                label={`${field}.itemName`}
+                                noLabel
+                                style={{ width: 140, marginRight: 12 }}
+                            ></Form.Input>
+                            <Form.Select
+                                field={`${field}[type]`}
+                                label={`${field}.type`}
+                                noLabel
+                                style={{ width: 140 }}
+                                optionList={[
+                                    { label: "Include", value: "include" },
+                                    { label: "Exclude", value: "exclude" },
+                                ]}
+                            ></Form.Select>
+                            <Button
+                                type="danger"
+                                theme="borderless"
+                                style={rowStyle}
+                                icon={<IconMinusCircle />}
+                                onClick={remove}
+                            />
+                            <Button
+                                icon={<IconPlusCircle />}
+                                style={rowStyle}
+                                disabled={i !== arrayFields.length - 1}
+                                onClick={() => {
+                                    addWithInitValue({
+                                        itemName: `Condition ${arrayFields.length + 1}`,
+                                        type: "include",
+                                    });
+                                }}
+                            />
+                        </div>
+                    ))}
+                </React.Fragment>
+            )}
+        </ArrayField>
+    );
+};
+
+const NestArrayFieldDemo = () => {
+    return (
+        <Form
+            onValueChange={(values) => console.log(values)}
+            initValues={initValue}
+            labelPosition="left"
+            style={{ textAlign: "left" }}
+            allowEmpty
+        >
+            <ArrayField field="group" >
+                {({ add, arrayFields, addWithInitValue }) => (
+                    <React.Fragment>
+                        <Button
+                            icon={<IconPlusCircle />}
+                            theme="solid"
+                            onClick={() => {
+                                addWithInitValue({
+                                    name: "New Rule",
+                                    rules: [
+                                        { itemName: "Main Text", type: "include" },
+                                        { itemName: "Accessory name", type: "include" },
+                                    ],
+                                });
+                            }}
+                        >
+                            Add receiving rules
+                        </Button>
+                        {arrayFields.map(({ field, key, remove }, i) => (
+                            <div
+                                key={key}
+                                style={{ width: 1000, display: "flex", flexWrap: "wrap" }}
+                            >
+                                <Form.Input
+                                    field={`${field}[name]`}
+                                    labelPosition="top"
+                                    label={"RuleName"}
+                                    style={{ width: "600px" }}
+                                ></Form.Input>
+                                <Button
+                                    type="danger"
+                                    theme="borderless"
+                                    style={{ margin: "36px 0 0 12px" }}
+                                    icon={<IconMinusCircle />}
+                                    onClick={remove}
+                                />
+                                <Typography.Text strong style={{ flexBasis: "100%" }}>
+                                    When the mail arrives, the following conditions are met:
+                                </Typography.Text>
+                                <Card
+                                    shadow="hover"
+                                    style={{
+                                        width: 620,
+                                        margin: "12px 0 0 24px",
+                                    }}
+                                >
+                                    <NestedField field={field} />
+                                </Card>
+                            </div>
+                        ))}
+                    </React.Fragment>
+                )}
+            </ArrayField>
+        </Form>
+    );
+};
+
+render(NestArrayFieldDemo);
+```
+
+
 #### Add or delete form items dynamically - by use formApi
 
 If you don't use ArrayField, you can use the provided formApi to manually add or delete formState.
@@ -1542,12 +1694,12 @@ class ArrayDemo extends React.Component {
     renderItems(formState, values) {
         return values.effects && values.effects.map((effect, i) => (
             <div key={effect.key} style={{ width: 1000, display: 'flex' }}>
-                <Form.Input field={`effects[${i}].name`} style={{ width: 200, marginRight: 16 }}></Form.Input>
+                <Form.Input field={`effects[${i}].name`} style={{ width: 200, marginRight: 12 }}></Form.Input>
                 <Form.Select field={`effects[${i}].type`} style={{ width: 90 }}>
                     <Form.Select.Option value='2D'>2D</Form.Select.Option>
                     <Form.Select.Option value='3D'>3D</Form.Select.Option>
                 </Form.Select>
-                <Button type='danger' onClick={() => this.remove(effect.key)} style={{ margin: 16 }}>Remove</Button>
+                <Button type='danger' onClick={() => this.remove(effect.key)} style={{ margin: 12 }}>Remove</Button>
             </div>
         ));
     }
@@ -1918,8 +2070,8 @@ render(WithFieldDemo2);
 | onChange          | Callback invoked when form update, including Fields mount/unmount / value change / <br/> blur / validation status change / error status change.                                                                                                                                                                     | function (formState: object)                    |            |
 | onValueChange     | Callback invoked when form values update                                                                                                                                                                                                                                                                            | function (values: object, changedValue: object) |
 | onReset           | Callback invoked after clicked on reset button or executed `formApi.reset()`                                                                                                                                                                                                                                        | function ()                                     |            |
-| onSubmit          | Callback invoked after clicked on submit button or executed `formApi.submit()`, <br/>and all validation pass.                                                                                                                                                                                                        | function (values: object)                       |            |
-| onSubmitFail      | Callback invoked after clicked on submit button or executed `formApi.submit()`,<br/> but validate failed.                                                                                                                                                                                                            | function (object, values: object)               |            |
+| onSubmit          | Callback invoked after clicked on submit button or executed `formApi.submit()`, <br/>and all validation pass.                                                                                                                                                                                                        | function (values: object, e: event)                       |            |
+| onSubmitFail      | Callback invoked after clicked on submit button or executed `formApi.submit()`,<br/> but validate failed.                                                                                                                                                                                                            | function (error: object, values: object, e: event)               |            |
 | render            | For declaring fields, not used at the same time as component, props.children                                                                                                                                                                                                                                        | function                                        |
 | showValidateIcon  | Whether the verification information block in the field automatically adds the corresponding status icon display <br/>**since v1.0.0**                                                                                                                                                                              | boolean                                         | true       |
 | validateFields    | Form-level custom validate functions are called at submit or formApi.validate(). <br/>Supported synchronous / asynchronous function                                                                                                                                                                                 | function (values)                               |            |
@@ -1956,15 +2108,15 @@ The table below describes the features available in the formApi.
 
 
 | Function      | Description                                                                        | example                                                                                                                       |
-| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------------------- |
+| ------------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |-------------------------------------------------------------------------------------------------------------------------------|
 | getFormState  | Get FormState                                                                                                                                                                                                                                                                                                                      | formApi.getFormState()                                                                                                        |
 | submitForm    | Manually submit form operation                                                                                                                                                                                                                                                                                               | formApi.submitForm()                                                                                                          |
-| reset         | Reset the form manually                                                                                                                                                                                                                                                                                                            | formApi.reset()                                                                                                               |
-| validate      | Manually trigger validation of the entire form. the verification of the entire Field will be triggered by default when no parameters are passed , if you want to trigger the verification of some fields, pass in the target field array <br/><br/> After the Form level validator is configured, the Field level validator will not be triggered again when submit or formApi.validate()  | formApi.validate() <br/>.then(values ​​=> {})<br/>.catch(errors => {})<br/>OR formApi.validate(['fieldA','fieldB'])                                                        |
+| reset         | Reset the form manually                                                                                                                                                                                                                                                                                                            | formApi.reset(fields?: Array <string\>)                                                                                      |
+| validate      | Manually trigger validation of the entire form. the verification of the entire Field will be triggered by default when no parameters are passed , if you want to trigger the verification of some fields, pass in the target field array <br/><br/> After the Form level validator is configured, the Field level validator will not be triggered again when submit or formApi.validate()  | formApi.validate() <br/>.then(values ​​=> {})<br/>.catch(errors => {})<br/>OR formApi.validate(['fieldA','fieldB'])           |
 | setValues ​​  | Set the values ​​of the entire form. The isOverride in the second parameter is false by default. <br/> By default, only the values ​​of the existing field in the Form are updated from `newValues` to`formState.values`. <br/> When isOverride is `true`, the newValues ​​will be overwritten and assigned to formState.values ​​ | formApi.setValues(newValues: object, {isOverride: boolean})                                                                   |
 | getValues ​​  | Get the values of all Field                                                                                                                                                                                                                                                                                                        | formApi.getValues()                                                                                                           |
 | setValue      | provides direct modification of formState.values ​​method.<br/>The difference from `setValues` ​​is that it only modifies a single field.                                                                                                                                                                                          | formApi.setValue(field: string, newFieldValue: any)                                                                           |
-| getValue      | Get the value of all / single Field                                                                                                                                                                                                                                                                                                | formApi.getValue()<br/>formApi.getValue(field: string)                                                                         |
+| getValue      | Get the value of all / single Field                                                                                                                                                                                                                                                                                                | formApi.getValue()<br/>formApi.getValue(field: string)                                                                        |
 | setTouched    | Modify formState.touched                                                                                                                                                                                                                                                                                                           | formApi.setTouched(field: string, isTouched: boolean)<br/>                                                                    |
 | getTouched    | Get the touched state of the Field                                                                                                                                                                                                                                                                                                 | formApi.getTouched(field: string)                                                                                             |
 | setError      | Modify the error information of a field                                                                                                                                                                                                                                                                                            | formApi.setError(field: string, fieldErrorMessage: string)                                                                    |

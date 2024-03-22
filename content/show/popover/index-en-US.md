@@ -26,7 +26,7 @@ import { Popover } from '@douyinfe/semi-ui';
 
 Tooltip needs to apply DOM event listeners to children. If the child element is a custom component, you need to ensure that it can pass properties to the underlying DOM element 
 
-At the same time, in order to calculate the positioning of the popup layer, it is necessary to obtain the real DOM elements of the children, so Tooltip supports the following types of children 
+At the same time, in order to calculate the positioning of the popup layer, it is necessary to obtain the real DOM elements of the children, so Popover supports the following types of children 
 
 1. Class Component, it is not mandatory to bind ref, but you need to ensure that props can be transparently transmitted to the real DOM node 
 2. Use the functional component wrapped by forwardRef to transparently transmit props and ref to the real DOM node in children 
@@ -474,27 +474,36 @@ import { Popover, Tag } from '@douyinfe/semi-ui';
 
 function Demo() {
     return (
-        <Popover
-            content={
-                <article style={{ padding: 4 }}>
-                    Hi ByteDancer, this is a popover.
-                    <br /> We have 2 lines.
-                </article>
-            }
-            trigger="custom"
-            position='right'
-            visible
-            showArrow
-            style={{
-                backgroundColor: 'rgba(var(--semi-blue-4),1)',
-                borderColor: 'rgba(var(--semi-blue-4),1)',
-                color: 'var(--semi-color-white)',
-                borderWidth: 1,
-                borderStyle: 'solid',
-            }}
-        >
-            <Tag>Click here</Tag>
-        </Popover>
+        <div id='popup-parent' style={{ position: 'relative' }}>
+            <Popover
+                content={
+                    <article style={{ padding: 4 }}>
+                        Hi, Semi UI Popover.
+                    </article>
+                }
+                getPopupContainer={() => document.querySelector('#popup-parent')}
+                trigger='custom'
+                visible
+                position='right'
+                showArrow
+                style={{
+                    backgroundColor: 'rgba(var(--semi-blue-4),1)',
+                    borderColor: 'rgba(var(--semi-blue-4),1)',
+                    color: 'var(--semi-color-white)',
+                    borderWidth: 1,
+                    borderStyle: 'solid',
+                }}
+            >
+                <Tag
+                    style={{
+                        backgroundColor: 'rgba(var(--semi-blue-4),1)',
+                        color: 'var(--semi-color-white)'
+                    }}
+                >
+                    Colorful Popover
+                </Tag>
+            </Popover>
+        </div>
     );
 }
 ```
@@ -539,9 +548,9 @@ Please refer to [Use with Tooltip/Popconfirm](/en-US/show/tooltip#%E6%90%AD%E9%8
 | content | Content displayed                                                                                                                                                                                                                             | string \| ReactNode |  |
 | clickToHide | Whether to automatically close the elastic layer when clicking on the floating layer and any element inside                                                                                                                                   | boolean | false | **0.24.0** |
 | disableFocusListener | When trigger is `hover`, does not respond to the keyboard focus popup event, see details at [issue#977](https://github.com/DouyinFE/semi-design/issues/977)                                                                                   | boolean | true | **2.17.0** |
-| getPopupContainer | Specifies the parent DOM, and the bullet layer will be rendered to the DOM, you need to set 'position: relative`                                                                                                                              | () => HTMLElement | () => document.body |
+| getPopupContainer | Specifies the parent DOM, and the bullet layer will be rendered to the DOM, you need to set 'position: relative`  This will change the DOM tree position, but not the view's rendering position.                                                                                                                              | () => HTMLElement | () => document.body |
 | guardFocus | When the focus is in the popup layer, toggle whether the Tab makes the focus loop in the popup layer                                                                                                                                          | boolean | true | **2.8.0** |
-| keepDOM | Whether to keep internal components from being destroyed when closing                                          | boolean | false | **2.31.0** |
+| keepDOM | Whether to keep internal components from being destroyed when closing                                                                                                                                                                         | boolean | false | **2.31.0** |
 | margin | Popup layer calculates the size of the safe area when the current direction overflows, used in scenes covered by fixed elements, more detail refer to [issue#549](https://github.com/DouyinFE/semi-design/issues/549), same as Tooltip margin | object\|number |  | 2.25.0 |
 | mouseEnterDelay | After the mouse is moved in, the display delay time, in milliseconds (only effective when the trigger is hover/focus)                                                                                                                         | number | 50 |  |
 | mouseLeaveDelay | The time for the delay to disappear after the mouse is moved out, in milliseconds (only effective when the trigger is hover/focus)                                                                                                            | number | 50 |  |
@@ -549,7 +558,7 @@ Please refer to [Use with Tooltip/Popconfirm](/en-US/show/tooltip#%E6%90%AD%E9%8
 | returnFocusOnClose | After pressing the Esc key, whether the focus returns to the trigger, it only takes effect when the trigger is set to hover, focus, click, etc                                                                                                | boolean | true | **2.8.0** |
 | visible | Display popup or not                                                                                                                                                                                                                          | boolean |  |
 | position | Directions, optional values: `top`, `topLeft`, `topRight`, `left`, `leftTop`, `leftBottom`, `right`, `rightTop`, `rightBottom`, `bottom`, `bottomLeft`, `bottomRight`                                                                         | string | "bottom" |
-| spacing | The distance between the out layer and the children element, in px                                                                                                                                                                            | number | 4(while showArrow=false) 10(while showArrow=true) |  |
+| spacing | The distance between the out layer and the children element, in px. object type props supported after v2.45                                                                                                                                                                            | number｜ <ApiType detail='{ x: number; y: number }'>SpacingObject</ApiType>  | 4(while showArrow=false) 10(while showArrow=true) |  |
 | showArrow | Display little arrow or not                                                                                                                                                                                                                   | boolean |  |
 | trigger | Trigger mode, optional value: `hover`, `focus`, `click`, `custom`                                                                                                                                                                             | string | 'hover' |
 | stopPropagation | Whether to prevent click events on the bomb layer from bubbling                                                                                                                                                                               | boolean | false | **0.34.0** |

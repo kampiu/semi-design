@@ -1,9 +1,8 @@
-/* eslint-disable jsx-a11y/no-static-element-interactions */
 import React, { CSSProperties } from "react";
 import BaseComponent from "../_base/baseComponent";
-import { PreviewProps as PreviewInnerProps, PreviewInnerStates, RatioType } from "./interface";
+import { PreviewInnerProps, PreviewInnerStates } from "./interface";
 import PropTypes from "prop-types";
-import { cssClasses } from "@douyinfe/semi-foundation/image/constants";
+import { cssClasses, numbers } from "@douyinfe/semi-foundation/image/constants";
 import cls from "classnames";
 import { isEqual, isFunction } from "lodash";
 import Portal from "../_portal";
@@ -11,17 +10,12 @@ import { IconArrowLeft, IconArrowRight } from "@douyinfe/semi-icons";
 import Header from "./previewHeader";
 import Footer from "./previewFooter";
 import PreviewImage from "./previewImage";
-import PreviewInnerFoundation, { PreviewInnerAdapter } from "@douyinfe/semi-foundation/image/previewInnerFoundation";
+import PreviewInnerFoundation, { PreviewInnerAdapter, RatioType } from "@douyinfe/semi-foundation/image/previewInnerFoundation";
 import { PreviewContext, PreviewContextProps } from "./previewContext";
+import { getScrollbarWidth } from "../_utils";
+import ReactDOM from "react-dom";
 
 const prefixCls = cssClasses.PREFIX;
-
-let startMouseDown = { x: 0, y: 0 };
-
-let mouseActiveTime: number = null;
-let stopTiming = false;
-let timer = null;
-// let bodyOverflowValue = document.body.style.overflow;
 
 export default class PreviewInner extends BaseComponent<PreviewInnerProps, PreviewInnerStates> {
     static contextType = PreviewContext;
@@ -32,7 +26,7 @@ export default class PreviewInner extends BaseComponent<PreviewInnerProps, Previ
         visible: PropTypes.bool,
         src: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
         currentIndex: PropTypes.number,
-        defaultIndex: PropTypes.number,
+        defaultCurrentIndex: PropTypes.number,
         defaultVisible: PropTypes.bool,
         maskClosable: PropTypes.bool,
         closable: PropTypes.bool,
@@ -53,6 +47,8 @@ export default class PreviewInner extends BaseComponent<PreviewInnerProps, Previ
         disableDownload: PropTypes.bool,
         viewerVisibleDelay: PropTypes.number,
         zIndex: PropTypes.number,
+        maxZoom: PropTypes.number,
+        minZoom: PropTypes.number,
         renderHeader: PropTypes.func,
         renderPreviewMenu: PropTypes.func,
         getPopupContainer: PropTypes.func,
@@ -76,9 +72,11 @@ export default class PreviewInner extends BaseComponent<PreviewInnerProps, Previ
         lazyLoad: false,
         preLoad: true,
         preLoadGap: 2,
-        zIndex: 1000,
+        zIndex: numbers.DEFAULT_Z_INDEX,
         maskClosable: true,
         viewerVisibleDelay: 10000,
+        maxZoom: 5,
+        minZoom: 0.1
     };
 
     private bodyOverflow: string;
@@ -129,7 +127,7 @@ export default class PreviewInner extends BaseComponent<PreviewInnerProps, Previ
                 const { onVisibleChange } = this.props;
                 isFunction(onVisibleChange) && onVisibleChange(visible);
             },
-            notifyRatioChange: (type: string) => {
+            notifyRatioChange: (type: RatioType) => {
                 const { onRatioChange } = this.props;
                 isFunction(onRatioChange) && onRatioChange(type);
             },
@@ -141,37 +139,48 @@ export default class PreviewInner extends BaseComponent<PreviewInnerProps, Previ
                 const { onDownload } = this.props;
                 isFunction(onDownload) && onDownload(src, index);
             },
+            notifyDownloadError: (src: string) => {
+                const { onDownloadError } = this.props;
+                isFunction(onDownloadError) && onDownloadError(src);
+            },
             registerKeyDownListener: () => {
                 window && window.addEventListener("keydown", this.handleKeyDown);
             },
             unregisterKeyDownListener: () => {
                 window && window.removeEventListener("keydown", this.handleKeyDown);
             },
-            getMouseActiveTime: () => {
-                return mouseActiveTime;
+            getSetDownloadFunc: () => {
+                return this.context?.setDownloadName ?? this.props.setDownloadName;
             },
-            getStopTiming: () => {
-                return stopTiming;
-            },
-            setStopTiming: (value) => {
-                stopTiming = value;
-            },
-            getStartMouseDown: () => {
-                return startMouseDown;
-            },
-            setStartMouseDown: (x: number, y: number) => {
-                startMouseDown = { x, y };
-            },
-            setMouseActiveTime: (time: number) => {
-                mouseActiveTime = time;
-            },
+            isValidTarget: (e) => {
+                const headerDom = this.headerRef && this.headerRef.current;
+                const footerDom = this.footerRef && this.footerRef.current;
+                const leftIconDom = this.leftIconRef && this.leftIconRef.current;
+                const rightIconDom = this.rightIconRef && this.rightIconRef.current;
+                const target = e.target as any;
+                if (
+                    headerDom && headerDom.contains(target) ||
+                    footerDom && footerDom.contains(target) ||
+                    leftIconDom && leftIconDom.contains(target) ||
+                    rightIconDom && rightIconDom.contains(target)  
+                ) {
+                    // Move in the operation area, return false
+                    return false;
+                }
+                // Move in the preview area except the operation area, return true
+                return true;
+            }
         };
 
     }
 
-    timer;
     context: PreviewContextProps;
     foundation: PreviewInnerFoundation;
+    imageWrapRef: React.RefObject<HTMLDivElement>;
+    headerRef: React.RefObject<HTMLElement>;
+    footerRef: React.RefObject<HTMLElement>;
+    leftIconRef: React.RefObject<HTMLDivElement>;
+    rightIconRef: React.RefObject<HTMLDivElement>;
 
     constructor(props: PreviewInnerProps) {
         super(props);
@@ -191,6 +200,11 @@ export default class PreviewInner extends BaseComponent<PreviewInnerProps, Previ
         this.bodyOverflow = '';
         this.originBodyWidth = '100%';
         this.scrollBarWidth = 0;
+        this.imageWrapRef = null;
+        this.headerRef = React.createRef<HTMLElement>();
+        this.footerRef= React.createRef<HTMLElement>();
+        this.leftIconRef= React.createRef<HTMLDivElement>();
+        this.rightIconRef= React.createRef<HTMLDivElement>();
     }
 
     static getDerivedStateFromProps(props: PreviewInnerProps, state: PreviewInnerStates) {
@@ -207,6 +221,9 @@ export default class PreviewInner extends BaseComponent<PreviewInnerProps, Previ
             willUpdateStates.visible = props.visible;
             if (props.visible) {
                 willUpdateStates.preloadAfterVisibleChange = true;
+                willUpdateStates.viewerVisible = true;
+                willUpdateStates.rotation = 0;
+                willUpdateStates.ratio = 'adaptation';
             }
         }
         if ("currentIndex" in props && props.currentIndex !== state.currentIndex) {
@@ -218,15 +235,8 @@ export default class PreviewInner extends BaseComponent<PreviewInnerProps, Previ
         return willUpdateStates;
     }
 
-    static getScrollbarWidth() {
-        if (globalThis && Object.prototype.toString.call(globalThis) === '[object Window]') {
-            return window.innerWidth - document.documentElement.clientWidth;
-        }
-        return 0;
-    }
-
     componentDidMount() {
-        this.scrollBarWidth = PreviewInner.getScrollbarWidth();
+        this.scrollBarWidth = getScrollbarWidth();
         this.originBodyWidth = document.body.style.width;
         if (this.props.visible) {
             this.foundation.beforeShow();
@@ -234,10 +244,8 @@ export default class PreviewInner extends BaseComponent<PreviewInnerProps, Previ
     }
 
     componentDidUpdate(prevProps: PreviewInnerProps, prevState: PreviewInnerStates) {
-        if (prevState.visible !== this.props.visible && this.props.visible) {
-            mouseActiveTime = new Date().getTime();
-            timer && clearInterval(timer);
-            timer = setInterval(this.viewVisibleChange, 1000);
+        if (prevProps.src !== this.props.src) {
+            this.foundation.updateTimer();
         }
         // hide => show
         if (!prevProps.visible && this.props.visible) {
@@ -250,7 +258,7 @@ export default class PreviewInner extends BaseComponent<PreviewInnerProps, Previ
     }
 
     componentWillUnmount() {
-        timer && clearInterval(timer);
+        this.foundation.clearTimer();
     }
 
     isInGroup() {
@@ -269,11 +277,11 @@ export default class PreviewInner extends BaseComponent<PreviewInnerProps, Previ
         this.foundation.handleDownload();
     }
 
-    handlePreviewClose = () => {
-        this.foundation.handlePreviewClose();
+    handlePreviewClose = (e: React.MouseEvent<HTMLElement>) => {
+        this.foundation.handlePreviewClose(e);
     }
 
-    handleAdjustRatio = (type: string) => {
+    handleAdjustRatio = (type: RatioType) => {
         this.foundation.handleAdjustRatio(type);
     }
 
@@ -281,8 +289,8 @@ export default class PreviewInner extends BaseComponent<PreviewInnerProps, Previ
         this.foundation.handleRotateImage(direction);
     }
 
-    handleZoomImage = (newZoom: number) => {
-        this.foundation.handleZoomImage(newZoom);
+    handleZoomImage = (newZoom: number, notify: boolean = true) => {
+        this.foundation.handleZoomImage(newZoom, notify);
     }
 
     handleMouseUp = (e): void => {
@@ -293,9 +301,6 @@ export default class PreviewInner extends BaseComponent<PreviewInnerProps, Previ
         this.foundation.handleMouseMove(e);
     }
 
-    handleMouseEvent = (e, event: string) => {
-        this.foundation.handleMouseMoveEvent(e, event);
-    }
 
     handleKeyDown = (e: KeyboardEvent) => {
         this.foundation.handleKeyDown(e);
@@ -313,9 +318,35 @@ export default class PreviewInner extends BaseComponent<PreviewInnerProps, Previ
         this.foundation.handleMouseDown(e);
     }
 
+    handleWheel = (e) => {
+        this.foundation.handleWheel(e);
+    }
+
+    // 为什么通过 addEventListener 注册 wheel 事件而不是使用 onWheel 事件？
+    // 因为 Passive Event Listeners（https://developer.mozilla.org/en-US/docs/Web/API/EventTarget/addEventListener#improving_scrolling_performance_with_passive_listeners）
+    // Passive Event Listeners 是一种优化技术，用于提高滚动性能。在默认情况下，浏览器会假设事件的监听器不会调用 
+    // preventDefault() 方法来阻止事件的默认行为，从而允许进行一些优化操作，例如滚动平滑。
+    // 对于 Image 而言，如果使用触控板，双指朝不同方向分开放大图片，则需要  preventDefault 防止页面整体放大。
+    // Why register wheel event through addEventListener instead of using onWheel event？
+    // Because of Passive Event Listeners(an optimization technique used to improve scrolling performance. By default, 
+    // the browser will assume that event listeners will not call preventDefault() method to prevent the default behavior of the event, 
+    // allowing some optimization operations such as scroll smoothing.)
+    // For Image, if we use the trackpad and spread your fingers in different directions to enlarge the image, we need to preventDefault
+    // to prevent the page from being enlarged as a whole.
+    registryImageWrapRef = (ref): void => {
+        if (this.imageWrapRef) {
+            (this.imageWrapRef as any).removeEventListener("wheel", this.handleWheel);
+        }
+        if (ref) {
+            ref.addEventListener("wheel", this.handleWheel, { passive: false });
+        }
+        this.imageWrapRef = ref;
+    };
+
     render() {
         const {
             getPopupContainer,
+            closable,
             zIndex,
             visible,
             className,
@@ -363,22 +394,20 @@ export default class PreviewInner extends BaseComponent<PreviewInnerProps, Previ
         const showPrev = total !== 1 && (infinite || currentIndex !== 0);
         const showNext = total !== 1 && (infinite || currentIndex !== total - 1);
         return (
-            <Portal
+            visible && <Portal
                 getPopupContainer={getPopupContainer}
                 style={wrapperStyle}
-            >
-                {visible &&
-                // eslint-disable-next-line jsx-a11y/mouse-events-have-key-events,jsx-a11y/no-static-element-interactions
+            >  
+                {/* eslint-disable-next-line jsx-a11y/no-static-element-interactions */}
                 <div
                     className={previewWrapperCls}
                     style={style}
                     onMouseDown={this.handleMouseDown}
                     onMouseUp={this.handleMouseUp}
+                    ref={this.registryImageWrapRef}
                     onMouseMove={this.handleMouseMove}
-                    onMouseOver={(e): void => this.handleMouseEvent(e.nativeEvent, "over")}
-                    onMouseOut={(e): void => this.handleMouseEvent(e.nativeEvent, "out")}
                 >
-                    <Header className={cls(hideViewerCls)} onClose={this.handlePreviewClose} renderHeader={renderHeader}/>
+                    <Header ref={this.headerRef} className={cls(hideViewerCls)} onClose={this.handlePreviewClose} renderHeader={renderHeader} closable={closable}/>
                     <PreviewImage
                         src={imgSrc[currentIndex]}
                         onZoom={this.handleZoomImage}
@@ -386,15 +415,15 @@ export default class PreviewInner extends BaseComponent<PreviewInnerProps, Previ
                         setRatio={this.handleAdjustRatio}
                         zoom={zoom}
                         ratio={ratio}
-                        zoomStep={zoomStep}
                         rotation={rotation}
-                        crossOrigin={crossOrigin} 
+                        crossOrigin={crossOrigin}
                         onError={this.onImageError}
                         onLoad={this.onImageLoad}
                     />
                     {showPrev && (
                         // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
                         <div
+                            ref={this.leftIconRef}
                             className={cls(`${previewPrefixCls}-icon`, `${previewPrefixCls}-prev`, hideViewerCls)}
                             onClick={(): void => this.handleSwitchImage("prev")}
                         >
@@ -404,6 +433,7 @@ export default class PreviewInner extends BaseComponent<PreviewInnerProps, Previ
                     {showNext && (
                         // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
                         <div
+                            ref={this.rightIconRef}
                             className={cls(`${previewPrefixCls}-icon`, `${previewPrefixCls}-next`, hideViewerCls)}
                             onClick={(): void => this.handleSwitchImage("next")}
                         >
@@ -411,6 +441,7 @@ export default class PreviewInner extends BaseComponent<PreviewInnerProps, Previ
                         </div>
                     )}
                     <Footer
+                        forwardRef={this.footerRef}
                         className={hideViewerCls}
                         totalNum={total}
                         curPage={currentIndex + 1}
@@ -422,6 +453,7 @@ export default class PreviewInner extends BaseComponent<PreviewInnerProps, Previ
                         ratio={ratio}
                         prevTip={prevTip}
                         nextTip={nextTip}
+                        zIndex={zIndex}
                         zoomInTip={zoomInTip}
                         zoomOutTip={zoomOutTip}
                         rotateTip={rotateTip}
@@ -438,7 +470,7 @@ export default class PreviewInner extends BaseComponent<PreviewInnerProps, Previ
                         onAdjustRatio={this.handleAdjustRatio}
                         renderPreviewMenu={renderPreviewMenu}
                     />
-                </div>}
+                </div>
             </Portal>
         );
     }

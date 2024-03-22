@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 
 import './select.scss';
-import { Input, Select, Button, Icon, Avatar, Checkbox, Form, withField, Space, Tag, Switch } from '../../index';
+import { Input, Select, Button, Icon, Avatar, Checkbox, Form, withField, Space, Tag, Switch, Divider } from '../../index';
 import CustomTrigger from './CustomTrigger';
 import classNames from 'classnames';
 const Option = Select.Option;
@@ -2101,7 +2101,6 @@ _CustomCreate.story = {
 class OptionGroupDemo extends React.Component {
   constructor(props) {
     super(props);
-    this.handleSearch = this.handleSearch.bind(this);
     this.state = {
       groups: [
         {
@@ -2112,7 +2111,7 @@ class OptionGroupDemo extends React.Component {
               value: 'zhongguo',
             },
             {
-              label: 'Koera',
+              label: 'Korea',
               value: 'hanguo',
             },
           ],
@@ -2143,24 +2142,6 @@ class OptionGroupDemo extends React.Component {
     };
   }
 
-  handleSearch(input) {
-    let groups = [1, 2, 3].map(i => {
-      return {
-        label: i,
-        // label: Math.random(),
-        children: [10, 20].map(j => {
-          return {
-            label: Math.random(),
-            value: Math.random(),
-          };
-        }),
-      };
-    });
-    this.setState({
-      groups,
-    });
-  }
-
   renderGroup(group, index) {
     const options = group.children.map(option => (
       <Select.Option value={option.value} label={option.label} key={option.label} />
@@ -2173,16 +2154,44 @@ class OptionGroupDemo extends React.Component {
     return (
       <>
         <Select
-          placeholder=""
+          placeholder="with key"
+          id='with-key'
           style={{
             width: 180,
           }}
           filter
-          onSearch={this.handleSearch}
-          remote
         >
           {groups.map((group, index) => this.renderGroup(group, index))}
         </Select>
+
+        <Select
+          filter={(sugInput, option) => {
+              let label = option.label.toUpperCase();
+              let sug = sugInput.toUpperCase();
+              return label.includes(sug);
+          }}
+          id='without-key'
+          style={{ width: "180px" }}
+          placeholder="without key"
+        >
+          <Select.OptGroup label="Group1">
+            <Select.Option value="douyin">
+              Douyin
+            </Select.Option>
+            <Select.Option value="ulikecam">
+              Ulikecam
+            </Select.Option>
+          </Select.OptGroup>
+          <Select.OptGroup label="Group2">
+            <Select.Option value="jianying">
+              Capcut
+            </Select.Option>
+            <Select.Option value="xigua">
+              Xigua
+            </Select.Option>
+          </Select.OptGroup>
+        </Select>
+
       </>
     );
   }
@@ -2198,11 +2207,13 @@ const BlurDemo = () => {
   const onBlur = (value, e) => {
     console.log(value);
     console.log(e);
+    console.log('onBlur');
   };
 
   const onFocus = (value, e) => {
     console.log(value);
     console.log(e);
+    console.log('onFocus');
   };
 
   return (
@@ -2217,7 +2228,25 @@ const BlurDemo = () => {
         onFocus={onFocus}
       >
         <Select.Option value="zhongguo">China</Select.Option>
-        <Select.Option value="hanguo">Koera</Select.Option>
+        <Select.Option value="hanguo">Korea</Select.Option>
+        <Select.Option value="deguo">Germany</Select.Option>
+        <Select.Option value="faguo">France</Select.Option>
+      </Select>
+      <br />
+      <br />
+      <br />
+      <Select
+        filter
+        placeholder="多选"
+        style={{
+          width: 180,
+        }}
+        onBlur={onBlur}
+        onFocus={onFocus}
+        multiple
+      >
+        <Select.Option value="zhongguo">China</Select.Option>
+        <Select.Option value="hanguo">Korea</Select.Option>
         <Select.Option value="deguo">Germany</Select.Option>
         <Select.Option value="faguo">France</Select.Option>
       </Select>
@@ -2694,7 +2723,7 @@ const FilterDefaultOpen = () => {
       >
         <Select.OptGroup label="Asia">
           <Select.Option value="a-1">China</Select.Option>
-          <Select.Option value="a-2">Koera</Select.Option>
+          <Select.Option value="a-2">Korea</Select.Option>
         </Select.OptGroup>
         <Select.OptGroup label="Europe">
           <Select.Option value="b-1">Germany</Select.Option>
@@ -2716,7 +2745,7 @@ const FilterDefaultOpen = () => {
       >
         <Select.OptGroup label="Asia">
           <Select.Option value="a-1">China</Select.Option>
-          <Select.Option value="a-2">Koera</Select.Option>
+          <Select.Option value="a-2">Korea</Select.Option>
         </Select.OptGroup>
         <Select.OptGroup label="Europe">
           <Select.Option value="b-1">Germany</Select.Option>
@@ -2738,7 +2767,7 @@ const FilterDefaultOpen = () => {
         onChange={val => setValue1(val)}
       >
         <Select.Option value="a-1">China</Select.Option>
-        <Select.Option value="a-2">Koera</Select.Option>
+        <Select.Option value="a-2">Korea</Select.Option>
         <Select.Option value="b-1">Germany</Select.Option>
         <Select.Option value="b-2">France</Select.Option>
         <Select.Option value="c-1">Peru</Select.Option>
@@ -3289,3 +3318,149 @@ export const Fix1584 = () => {
 }
 
 
+export const Fix1560 = () => {
+  return (
+    <div>
+      <h4>边界 case 测试</h4>
+      <h4>maxTagCount = 3，截断最后一个 tag, 加减项正常</h4>
+      <Select
+        multiple
+        maxTagCount={3}
+        ellipsisTrigger
+        showRestTagsPopover={true}
+        restTagsPopoverProps={{ position: 'top' }}
+        style={{ width: '255px' }}
+        defaultValue={['abc', 'ulikecam', "xigua"]}
+      >
+        <Select.Option value="abc">抖音</Select.Option>
+        <Select.Option value="ulikecam">轻颜相机</Select.Option>
+        <Select.Option value="jianying">剪映</Select.Option>
+        <Select.Option value="xigua">西瓜视频</Select.Option>
+      </Select>
+      <br /><br />
+      <h4>maxTagCount = 3，最大宽度只展示 2 个 Tag，加减项正常</h4>
+      <Select
+        multiple
+        maxTagCount={2}
+        ellipsisTrigger
+        showRestTagsPopover={true}
+        restTagsPopoverProps={{ position: 'top' }}
+        style={{ width: '240px' }}
+        defaultValue={['xigua', 'ulikecam', 'jianying', 'abc']}
+      >
+        <Select.Option value="abc">抖音</Select.Option>
+        <Select.Option value="ulikecam">轻颜相机</Select.Option>
+        <Select.Option value="jianying">剪映</Select.Option>
+        <Select.Option value="xigua">西瓜视频</Select.Option>
+      </Select>
+    </div>
+  );
+}
+
+class VirtualizeAllowCreate extends React.Component {
+    constructor(props) {
+        super(props);
+        const taskList=[{
+            "task_id": 500333,
+            "task_name": "抖音直播间-哈哈哈",
+            "task_key": "hhh_watch_live"
+        },]
+        let newOptions = taskList.map(r=>({value:r.task_id,label:`${r.task_id} ${r.task_name}`}))
+        this.state = {
+            optionList: newOptions,
+        };
+    }
+    render() {
+        let { optionList } = this.state;
+        let virtualize = {
+            height: 270,
+            width: '100%',
+            itemSize: 36, // px
+        };
+        return (
+            <>
+                <Select
+                    allowCreate
+                    placeholder="拥有3k个Option的Select"
+                    style={{ width: 260 }}
+                    filter
+                    onSearch={this.handleSearch}
+                    virtualize={virtualize}
+                    optionList={optionList}
+                    renderCreateItem={(iv, isFocused, style) => <div style={{ padding: '6px 12px', ...style }}>输入 {iv}</div>} 
+                ></Select>
+            </>
+        );
+    }
+}
+
+// virtualize allowCreate + renderCreateItem, optionList render not as expected
+export const Fix1856 = () => (<VirtualizeAllowCreate />); 
+
+
+export const TestOptionKey = () => {
+  return <><Select style={{ width: 300 }}>
+      <Select.Option label='abc' value='2' key='abc'></Select.Option>
+      <Select.Option label='efg' value='3' key='efg'></Select.Option>
+      <Select.Option label='kkk' value='5'></Select.Option>
+      <Select.Option label='fff' value='4'></Select.Option>
+    </Select>
+    <br/><br/>
+    <Select style={{ width: 300 }} optionList={[
+      { label: '1', value: '2', key: 'kkk' },
+      { label: '2', value: '3', key: 'jjj' },
+      { label: '3', value: '2' },
+    ]}>
+    </Select>
+  </>
+}
+
+export const AllCaseOfBlur = () => {
+
+  const BaseSelect = (props) => {
+    return (
+       <Select defaultValue="abc" style={{ width: 120 }} {...props} >
+        <Select.Option value="abc">抖音</Select.Option>
+        <Select.Option value="ulikecam">轻颜相机</Select.Option>
+        <Select.Option value="jianying" disabled>
+            剪映
+        </Select.Option>
+        <Select.Option value="xigua">西瓜视频</Select.Option>
+      </Select>
+    )
+  }
+  return (
+    <div>
+      <h3>单选</h3>
+      <Divider margin='12px' />
+      <h5>默认配置</h5>
+      <BaseSelect data-cy="singleDefault" onBlur={()=>{console.log('single default onBlur')}} />
+      <br />
+      <h5>filter</h5>
+      <BaseSelect data-cy="singleFilter" filter onBlur={()=>{console.log('single filter onBlur')}} />
+      <br />
+      <h5>autoFocus</h5>
+      <BaseSelect data-cy="singleAutoFocus" autoFocus onBlur={()=>{console.log('single autoFocus onBlur')}} />
+      <br />
+      <h5>clickToHide</h5>
+      <BaseSelect data-cy="singleClickToHide" clickToHide onBlur={()=>{console.log('single clickToHide onBlur')}} />
+      <br />
+      <h5>showClear</h5>
+      <BaseSelect data-cy="singleShowClear" showClear onBlur={()=>{console.log('single showClear onBlur')}} />
+
+      <h3>多选</h3>
+      <Divider margin='12px' />
+      <h5>默认配置</h5>
+      <BaseSelect data-cy="multipleDefault" multiple onBlur={()=>{console.log('multiple default onBlur')}} />
+      <br />
+      <h5>filter</h5>
+      <BaseSelect data-cy="multipleFilter" multiple filter onBlur={()=>{console.log('multiple filter onBlur')}} />
+      <h5>clickToHide</h5>
+      <BaseSelect data-cy="multipleClickToHide" multiple clickToHide onBlur={()=>{console.log('multiple clickToHide onBlur')}} />
+      <h5>showClear</h5>
+      <BaseSelect data-cy="multipleShowClear" multiple showClear onBlur={()=>{console.log('multiple showClear onBlur')}} />
+      <br />
+      <br />
+    </div>
+  )
+}

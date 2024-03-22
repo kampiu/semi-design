@@ -1,10 +1,3 @@
-/* eslint-disable prefer-destructuring */
-/* eslint-disable max-depth */
-/* eslint-disable max-nested-callbacks */
-/* eslint-disable max-len */
-/* eslint-disable no-param-reassign */
-/* eslint-disable eqeqeq */
-/* eslint-disable @typescript-eslint/no-empty-function */
 import {
     get,
     merge,
@@ -211,6 +204,7 @@ class TableFoundation<RecordType> extends BaseFoundation<TableAdapter<RecordType
         } else if (defaultExpandAllGroupRows || expandAllGroupRows) {
             this._addNoDuplicatedItemsToArr(
                 expandedRowKeys,
+                propExpandedRowKeys,
                 groups && isMap(groups) && groups.size ? Array.from(groups.keys()) : []
             );
         } else if (Array.isArray(defaultExpandedRowKeys) && defaultExpandedRowKeys.length) {
@@ -518,8 +512,7 @@ class TableFoundation<RecordType> extends BaseFoundation<TableAdapter<RecordType
 
             if (!this._pagerIsControlled()) {
                 const total = get(propPagination, 'total', dataSource.length);
-                const pageSize = get(propPagination, 'pageSize', pagination.pageSize);
-                const { currentPage } = pagination;
+                const { currentPage, pageSize } = pagination;
 
                 const realTotalPage = Math.ceil(total / pageSize);
 
@@ -571,10 +564,8 @@ class TableFoundation<RecordType> extends BaseFoundation<TableAdapter<RecordType
 
     /**
      * Add non-repeating elements to the array itself
-     * @param {Array} srcArr
-     * @param {Object} objArrs
      */
-    _addNoDuplicatedItemsToArr(srcArr: any[] = [], ...objArrs: any[]) {
+    _addNoDuplicatedItemsToArr(srcArr: any[] = [], ...objArrs: any[][]) {
         for (const objArr of objArrs) {
             if (Array.isArray(objArr)) {
                 for (const item of objArr) {
@@ -997,7 +988,8 @@ class TableFoundation<RecordType> extends BaseFoundation<TableAdapter<RecordType
             }
             return true;
         } else {
-            return false;
+            const isAllSelected = allKeys.every(rowKey => selectedRowKeysSet.has(rowKey));
+            return isAllSelected || false;
         }
     }
 
@@ -1040,7 +1032,6 @@ class TableFoundation<RecordType> extends BaseFoundation<TableAdapter<RecordType
         let filterObj: BaseColumnProps<RecordType> = this.getQuery(dataIndex);
         const filterDropdownVisible = visible;
 
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         filterObj = { ...filterObj, filterDropdownVisible };
 
         if (!this._filterShowIsControlled()) {
@@ -1210,7 +1201,7 @@ export interface BaseSorterInfo<RecordType> {
     sorter?: BaseSorter<RecordType>
 }
 export type BaseSortOrder = boolean | ArrayElement<typeof strings.SORT_DIRECTIONS>;
-export type BaseSorter<RecordType> = boolean | ((a?: RecordType, b?: RecordType) => number);
+export type BaseSorter<RecordType> = boolean | ((a?: RecordType, b?: RecordType, sortOrder?: 'ascend' | 'descend') => number);
 export interface BaseChangeInfoFilter<RecordType> {
     dataIndex?: string;
     value?: any;

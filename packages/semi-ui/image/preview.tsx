@@ -9,6 +9,8 @@ import { getUuidShort } from "@douyinfe/semi-foundation/utils/uuid";
 import { cssClasses } from "@douyinfe/semi-foundation/image/constants";
 import { isObject, isEqual } from "lodash";
 import "@douyinfe/semi-foundation/image/image.scss";
+import cls from "classnames";
+import { omit } from "lodash";
 
 const prefixCls = cssClasses.PREFIX;
 
@@ -19,7 +21,7 @@ export default class Preview extends BaseComponent<PreviewProps, PreviewState> {
         visible: PropTypes.bool,
         src: PropTypes.oneOfType([PropTypes.string, PropTypes.array]),
         currentIndex: PropTypes.number,
-        defaultIndex: PropTypes.number,
+        defaultCurrentIndex: PropTypes.number,
         defaultVisible: PropTypes.bool,
         maskClosable: PropTypes.bool,
         closable: PropTypes.bool,
@@ -38,6 +40,8 @@ export default class Preview extends BaseComponent<PreviewProps, PreviewState> {
         lazyLoadMargin: PropTypes.string,
         preLoad: PropTypes.bool,
         preLoadGap: PropTypes.number,
+        previewCls: PropTypes.string,
+        previewStyle: PropTypes.object,
         disableDownload: PropTypes.bool,
         zIndex: PropTypes.number,
         renderHeader: PropTypes.func,
@@ -59,6 +63,7 @@ export default class Preview extends BaseComponent<PreviewProps, PreviewState> {
         src: [],
         lazyLoad: true,
         lazyLoadMargin: "0px 100px 100px 0px",
+        closable: true
     };
 
     get adapter() {
@@ -113,8 +118,8 @@ export default class Preview extends BaseComponent<PreviewProps, PreviewState> {
                     if (item.isIntersecting && src) {
                         (item.target as any).src = src;
                         (item.target as any).removeAttribute("data-src");
+                        this.previewObserver.unobserve(item.target);
                     }
-                    this.previewObserver.unobserve(item.target);
                 });
             },
             {
@@ -191,7 +196,12 @@ export default class Preview extends BaseComponent<PreviewProps, PreviewState> {
     };
 
     render() {
-        const { src, style, lazyLoad, ...restProps } = this.props;
+        const { src, className, style, lazyLoad, setDownloadName, ...restProps } = this.props;
+        const previewInnerProps = { 
+            ...omit(restProps, ['previewCls', 'previewStyle']), 
+            className: restProps?.previewCls, 
+            style: restProps?.previewStyle 
+        };
         const { currentIndex, visible } = this.state;
         const { srcListInChildren, newChildren, titles } = this.loopImageIndex();
         const srcArr = Array.isArray(src) ? src : (typeof src === "string" ? [src] : []);
@@ -208,13 +218,14 @@ export default class Preview extends BaseComponent<PreviewProps, PreviewState> {
                     previewObserver: this.previewObserver,
                     setCurrentIndex: this.handleCurrentIndexChange,
                     handleVisibleChange: this.handleVisibleChange,
+                    setDownloadName: setDownloadName,
                 }}
             >
-                <div id={this.previewGroupId} style={style} className={`${prefixCls}-preview-group`}>
+                <div id={this.previewGroupId} style={style} className={cls(`${prefixCls}-preview-group`, className)}>
                     {newChildren}
                 </div>
                 <PreviewInner
-                    {...restProps}
+                    {...previewInnerProps}
                     ref={this.previewRef}
                     src={finalSrcList}
                     currentIndex={currentIndex}

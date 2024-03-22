@@ -47,8 +47,8 @@ export const _Input = () => (
       width: 200,
     }}
   >
-    <Input />
-    <Input validateStatus="warning" />
+      <Input onlyBorder={2} size={"large"} />
+      <Input validateStatus="warning" />
     <Input validateStatus="error" />
     <br />
     <br />
@@ -905,6 +905,11 @@ export const TextAreaAutosize = () => {
   return (
     <div style={{ width: 200 }}>
       <TextArea autosize />
+      <TextArea autosize rows={2} />
+      <TextArea autosize={false} rows={2} />
+      <TextArea autosize={{ minRows: 1 }} />
+      <TextArea autosize={{ minRows: 1, maxRows: 3 }} onResize={({ height }) => console.log('onResize', height)}/>
+      <TextArea autosize={{ maxRows: 3 }} rows={1} />
     </div>
   )
 };
@@ -1010,3 +1015,19 @@ export const forwardRefFocus = () => {
     </div>
   </>
 )};
+
+export const TextAutoSizeResize = () => {
+  const [width, setWidth] = useState(800);
+
+  return (
+    <div>
+      <Space style={{ marginBottom: 20 }}>
+        <Button onClick={() => setWidth(100)}>width=100</Button>
+        <Button onClick={() => setWidth(1000)}>width=1000</Button>
+      </Space>
+      <div style={{ width, maxWidth: '100%' }}>
+        <TextArea autosize defaultValue='semi design semi design semi design semi design semi design semi design semi design semi design semi design semi design semi design semi design semi design semi design semi design semi design semi design semi design semi design semi design semi design semi design semi design semi design ' />
+      </div>
+    </div>
+  )
+};

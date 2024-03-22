@@ -1,30 +1,50 @@
 import React, { Component, CSSProperties } from 'react';
-import ReactDOM from 'react-dom';
 import cls from 'classnames';
 import PropTypes from 'prop-types';
 import { cssClasses, strings } from '@douyinfe/semi-foundation/typography/constants';
 import Typography from './typography';
 import Copyable from './copyable';
 import { IconSize as Size } from '../icons/index';
-import { isUndefined, omit, merge, isString, isNull } from 'lodash';
+import { isUndefined, omit, merge, isString, isNull, isFunction } from 'lodash';
 import Tooltip from '../tooltip/index';
 import Popover from '../popover/index';
 import getRenderText from './util';
 import warning from '@douyinfe/semi-foundation/utils/warning';
 import isEnterPress from '@douyinfe/semi-foundation/utils/isEnterPress';
 import LocaleConsumer from '../locale/localeConsumer';
-import { Locale } from '../locale/interface';
-import { Ellipsis, EllipsisPos, ShowTooltip, TypographyBaseSize, TypographyBaseType } from './interface';
+import type { Locale } from '../locale/interface';
+import type { Ellipsis, EllipsisPos, ShowTooltip, TypographyBaseSize, TypographyBaseType } from './interface';
 import { CopyableConfig, LinkType } from './title';
 import { BaseProps } from '../_base/baseComponent';
-import { isSemiIcon } from '../_utils';
-import ResizeObserver from '../resizeObserver';
+import { isSemiIcon, runAfterTicks } from '../_utils';
+import ResizeObserver, { ObserverProperty, ResizeEntry } from '../resizeObserver';
 
 export interface BaseTypographyProps extends BaseProps {
     copyable?: CopyableConfig | boolean;
     delete?: boolean;
     disabled?: boolean;
     icon?: React.ReactNode;
+    /**
+     * ellipsis 用于设置截断相关参数.  
+     * Ellipsis is used to set ellipsis related parameters.  
+     * ellipsis 仅支持纯文本的截断，不支持 reactNode 等复杂类型，请确保 children 传入内容类型为 string.  
+     * Ellipsis only supports ellipsis of plain text, and does not support complex types such as reactNode. 
+     * Please ensure that the content type of children is string.  
+     * Semi 截断有两种策略， CSS 截断和 JS 截断。  
+     * Semi ellipsis has two strategies, CSS ellipsis and JS ellipsis.   
+     *  - 当设置中间截断（pos='middle')、可展开（expandable)、有后缀（suffix 非空）、可复制（copyable），启用 JS 截断策略  
+     *  - When setting middle ellipsis (pos='middle')、expandable、suffix is not empty string、copyable,
+     * the JS ellipsis strategy is enabled
+     *  - 非以上场景，启用 CSS 截断策略  
+     *  - Otherwise, enable the CSS ellipsis strategy  
+     *   
+     * 通常来说 CSS 截断的性能优于 JS 截断。在 children 不变， 容器尺寸不变的情况下，CSS 截断只涉及 1-2 次计算，js 截断基于二分法，可能涉及多次计算。  
+     * In general CSS ellipsis performs better than JS ellipsis. when the children and container size remain unchanged, 
+     * CSS ellipsis only involves 1-2 calculations, while JS ellipsis is based on dichotomy and may require multiple calculations.  
+     * 同时使用大量带有截断功能的 Typography 需注意性能消耗，如在 Table 中，可通过设置合理的页容量进行分页减少性能损耗  
+     * Pay attention to performance consumption when using a large number of Typography with ellipsis. For example, in Table, 
+     * you can reduce performance loss by setting a reasonable pageSize for paging
+     */
     ellipsis?: Ellipsis | boolean;
     mark?: boolean;
     underline?: boolean;
@@ -151,6 +171,7 @@ export default class Base extends Component<BaseTypographyProps, BaseTypographyS
     rafId: ReturnType<typeof requestAnimationFrame>;
     expandStr: string;
     collapseStr: string;
+    observerTakingEffect: boolean = false
 
     constructor(props: BaseTypographyProps) {
         super(props);
@@ -159,11 +180,11 @@ export default class Base extends Component<BaseTypographyProps, BaseTypographyS
             copied: false,
             // ellipsis
             // if text is overflow in container
-            isOverflowed: true,
+            isOverflowed: false,
             ellipsisContent: props.children,
             expanded: false,
             // if text is truncated with js
-            isTruncated: true,
+            isTruncated: false,
             prevChildren: null,
         };
         this.wrapperRef = React.createRef();
@@ -173,7 +194,8 @@ export default class Base extends Component<BaseTypographyProps, BaseTypographyS
 
     componentDidMount() {
         if (this.props.ellipsis) {
-            this.onResize();
+            // runAfterTicks: make sure start observer on the next tick
+            this.onResize().then(()=>runAfterTicks(()=>this.observerTakingEffect = true, 1));
         }
     }
 
@@ -184,7 +206,7 @@ export default class Base extends Component<BaseTypographyProps, BaseTypographyS
 
         if (props.ellipsis && prevChildren !== props.children) {
             // reset ellipsis state if children update
-            newState.isOverflowed = true;
+            newState.isOverflowed = false;
             newState.ellipsisContent = props.children;
             newState.expanded = false;
             newState.isTruncated = true;
@@ -208,11 +230,16 @@ export default class Base extends Component<BaseTypographyProps, BaseTypographyS
         }
     }
 
-    onResize = () => {
+    onResize = async (entries?: ResizeEntry[]) => {
         if (this.rafId) {
             window.cancelAnimationFrame(this.rafId);
         }
-        this.rafId = window.requestAnimationFrame(this.getEllipsisState.bind(this));
+        return new Promise<void>(resolve => {
+            this.rafId = window.requestAnimationFrame(async ()=>{
+                await this.getEllipsisState();
+                resolve();
+            });
+        });
     };
 
     // if it needs to use js overflowed:
@@ -244,7 +271,9 @@ export default class Base extends Component<BaseTypographyProps, BaseTypographyS
     showTooltip = () => {
         const { isOverflowed, isTruncated, expanded } = this.state;
         const { showTooltip, expandable, expandText } = this.getEllipsisOpt();
-        const overflowed = !expanded && (isOverflowed || isTruncated);
+        const canUseCSSEllipsis = this.canUseCSSEllipsis();
+        // If the css is truncated, use isOverflowed to judge. If the css is truncated, use isTruncated to judge.
+        const overflowed = !expanded && (canUseCSSEllipsis ? isOverflowed : isTruncated);
         const noExpandText = !expandable && isUndefined(expandText);
         const show = noExpandText && overflowed && showTooltip;
         if (!show) {
@@ -252,18 +281,25 @@ export default class Base extends Component<BaseTypographyProps, BaseTypographyS
         }
         const defaultOpts = {
             type: 'tooltip',
-            opts: {},
         };
         if (typeof showTooltip === 'object') {
             if (showTooltip.type && showTooltip.type.toLowerCase() === 'popover') {
                 return merge(
                     {
                         opts: {
-                            style: { width: '240px' },
+                            // style: { width: '240px' },
                             showArrow: true,
                         },
                     },
-                    showTooltip
+                    showTooltip,
+                    {
+                        opts: {
+                            className: cls({
+                                [`${prefixCls}-ellipsis-popover`]: true,
+                                [showTooltip?.opts?.className]: Boolean(showTooltip?.opts?.className)
+                            }),
+                        }
+                    }
                 );
             }
             return { ...defaultOpts, ...showTooltip };
@@ -271,25 +307,51 @@ export default class Base extends Component<BaseTypographyProps, BaseTypographyS
         return defaultOpts;
     };
 
-    getEllipsisState() {
+    onHover = ()=>{
+        const canUseCSSEllipsis = this.canUseCSSEllipsis();
+        if (canUseCSSEllipsis) {
+            const { rows, suffix, pos } = this.getEllipsisOpt();
+            const updateOverflow = this.shouldTruncated(rows);
+            // isOverflowed needs to be updated to show tooltip when using css ellipsis
+            this.setState({
+                isOverflowed: updateOverflow,
+                isTruncated: false
+            });
+
+            return undefined;
+        }
+    }
+
+    getEllipsisState = async ()=> {
         const { rows, suffix, pos } = this.getEllipsisOpt();
         const { children } = this.props;
         // wait until element mounted
         if (!this.wrapperRef || !this.wrapperRef.current) {
-            this.onResize();
-            return false;
+            await this.onResize();
+            return;
         }
         const { expanded } = this.state;
         const canUseCSSEllipsis = this.canUseCSSEllipsis();
-        
+        if (canUseCSSEllipsis) {
+            // const updateOverflow = this.shouldTruncated(rows);
+            // // isOverflowed needs to be updated to show tooltip when using css ellipsis
+            // this.setState({
+            //     isOverflowed: updateOverflow,
+            //     isTruncated: false
+            // });
+
+            return ;
+        }
 
         // If children is null, css/js truncated flag isTruncate is false
         if (isNull(children)) {
-            this.setState({
-                isTruncated: false,
-                isOverflowed: false
-            });
-            return undefined;
+            return new Promise<void>(resolve=>{
+                this.setState({
+                    isTruncated: false,
+                    isOverflowed: false
+                }, resolve);
+            }); 
+
         }
 
         // Currently only text truncation is supported, if there is non-text, 
@@ -300,19 +362,9 @@ export default class Base extends Component<BaseTypographyProps, BaseTypographyS
         );
 
         if (!rows || rows < 0 || expanded) {
-            return undefined;
+            return;
         }
 
-        if (canUseCSSEllipsis) {
-            const updateOverflow = this.shouldTruncated(rows);
-            // isOverflowed needs to be updated to show tooltip when using css ellipsis
-            this.setState({
-                isOverflowed: updateOverflow,
-                isTruncated: false
-            });
-
-            return undefined;
-        }
 
         const extraNode = { expand: this.expandRef.current, copy: this.copyRef && this.copyRef.current };
 
@@ -326,11 +378,14 @@ export default class Base extends Component<BaseTypographyProps, BaseTypographyS
             suffix,
             pos
         );
-        this.setState({
-            ellipsisContent: content,
-            isTruncated: children !== content,
+        return new Promise<void>(resolve=>{
+            this.setState({
+                isOverflowed: false,
+                ellipsisContent: content,
+                isTruncated: children !== content,
+            }, resolve);
         });
-        return undefined;
+
     }
 
     /**
@@ -405,8 +460,8 @@ export default class Base extends Component<BaseTypographyProps, BaseTypographyS
      * 获取文本的缩略class和style
      *
      * 截断类型：
-     *  - CSS 截断，仅在 rows=1 且没有 expandable、pos、suffix 时生效
-     *  - JS 截断，应对 CSS 无法阶段的场景
+     *  - 当设置中间截断（pos='middle')、可展开（expandable)、有后缀（suffix 非空）、可复制（copyable），启用 JS 截断策略 
+     *  - 非以上场景，启用 CSS 截断策略
      * 相关变量
      *  props:
      *      - ellipsis:
@@ -422,8 +477,8 @@ export default class Base extends Component<BaseTypographyProps, BaseTypographyS
      * Get the abbreviated class and style of the text
      *
      * Truncation type:
-     *  -CSS truncation, which only takes effect when rows = 1 and there is no expandable, pos, suffix
-     *  -JS truncation, dealing with scenarios where CSS cannot stage
+     *  -When setting middle ellipsis (pos='middle')、expandable、suffix is not empty、copyable, the JS ellipsis strategy is enabled
+     *  -Otherwise, enable the CSS ellipsis strategy  
      * related variables
      *  props:
      *      -ellipsis:
@@ -472,14 +527,14 @@ export default class Base extends Component<BaseTypographyProps, BaseTypographyS
         const { isTruncated, expanded, ellipsisContent } = this.state;
         if (expanded || !isTruncated) {
             return (
-                <>
+                <span onMouseEnter={this.onHover}>
                     {children}
                     {suffix && suffix.length ? suffix : null}
-                </>
+                </span>
             );
         }
         return (
-            <span>
+            <span onMouseEnter={this.onHover}>
                 {ellipsisContent}
                 {/* {ELLIPSIS_STR} */}
                 {suffix}
@@ -626,8 +681,10 @@ export default class Base extends Component<BaseTypographyProps, BaseTypographyS
         const showTooltip = this.showTooltip();
         const content = this.renderContent();
         if (showTooltip) {
-            const { type, opts } = showTooltip as ShowTooltip;
-            if (type.toLowerCase() === 'popover') {
+            const { type, opts, renderTooltip } = showTooltip as ShowTooltip;
+            if (isFunction(renderTooltip)) {
+                return renderTooltip(children, content);
+            } else if (type.toLowerCase() === 'popover') {
                 return (
                     <Popover content={children} position="top" {...opts}>
                         {content}
@@ -656,7 +713,11 @@ export default class Base extends Component<BaseTypographyProps, BaseTypographyS
         );
         if (this.props.ellipsis) {
             return (
-                <ResizeObserver onResize={this.onResize} observeParent>
+                <ResizeObserver onResize={(...args)=>{
+                    if (this.observerTakingEffect) {
+                        this.onResize(...args);
+                    }
+                }} observeParent observerProperty={ObserverProperty.Width}>
                     {content}
                 </ResizeObserver>
             );

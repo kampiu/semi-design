@@ -1,4 +1,3 @@
-/* eslint-disable no-unused-vars, max-len, @typescript-eslint/no-unused-vars */
 import React from 'react';
 import cls from 'classnames';
 import PropTypes from 'prop-types';
@@ -25,7 +24,7 @@ export type InputMode = 'password';
 export type ValidateStatus = "default" | "error" | "warning" | "success";
 
 export interface InputProps extends
-    Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'prefix' | 'size' | 'autoFocus' | 'placeholder' | 'onFocus' | 'onBlur'> {
+    Omit<React.InputHTMLAttributes<HTMLInputElement>, 'onChange' | 'prefix' | 'size' | 'placeholder' | 'onFocus' | 'onBlur'> {
     'aria-label'?: React.AriaAttributes['aria-label'];
     'aria-describedby'?: React.AriaAttributes['aria-describedby'];
     'aria-errormessage'?: React.AriaAttributes['aria-errormessage'];
@@ -42,7 +41,6 @@ export interface InputProps extends
     defaultValue?: React.ReactText;
     disabled?: boolean;
     readonly?: boolean;
-    autofocus?: boolean;
     type?: string;
     showClear?: boolean;
     hideSuffix?: boolean;
@@ -68,7 +66,8 @@ export interface InputProps extends
     forwardRef?: ((instance: any) => void) | React.MutableRefObject<any> | null;
     preventScroll?: boolean;
     /** internal prop, DatePicker use it */
-    showClearIgnoreDisabled?: boolean
+    showClearIgnoreDisabled?: boolean;
+    onlyBorder?: number
 }
 
 export interface InputState {
@@ -100,7 +99,7 @@ class Input extends BaseComponent<InputProps, InputState> {
         defaultValue: PropTypes.any,
         disabled: PropTypes.bool,
         readonly: PropTypes.bool,
-        autofocus: PropTypes.bool,
+        autoFocus: PropTypes.bool,
         type: PropTypes.string,
         showClear: PropTypes.bool,
         hideSuffix: PropTypes.bool,
@@ -225,8 +224,8 @@ class Input extends BaseComponent<InputProps, InputState> {
         // autofocus is changed from the original support of input to the support of manually calling the focus method,
         // so that preventScroll can still take effect under the setting of autofocus
         this.foundation.init();
-        const { disabled, autofocus, preventScroll } = this.props;
-        if (!disabled && autofocus) {
+        const { disabled, autoFocus, preventScroll } = this.props;
+        if (!disabled && (autoFocus || this.props['autofocus'])) {
             this.inputRef.current.focus({ preventScroll });
         }
     }
@@ -426,7 +425,7 @@ class Input extends BaseComponent<InputProps, InputState> {
         const {
             addonAfter,
             addonBefore,
-            autofocus,
+            autoFocus,
             clearIcon,
             className,
             disabled,
@@ -453,6 +452,7 @@ class Input extends BaseComponent<InputProps, InputState> {
             preventScroll,
             borderless,
             showClearIgnoreDisabled,
+            onlyBorder,
             ...rest
         } = this.props;
         const { value, isFocus, minLength: stateMinLength } = this.state;
@@ -478,7 +478,8 @@ class Input extends BaseComponent<InputProps, InputState> {
             [`${wrapperPrefix}-modebtn`]: mode === 'password',
             [`${wrapperPrefix}-hidden`]: type === 'hidden',
             [`${wrapperPrefix}-${size}`]: size,
-            [`${prefixCls}-borderless`]: borderless
+            [`${prefixCls}-borderless`]: borderless,
+            [`${prefixCls}-only_border`]: onlyBorder!==undefined && onlyBorder!==null,
         });
         const inputCls = cls(prefixCls, {
             [`${prefixCls}-${size}`]: size,
@@ -513,11 +514,20 @@ class Input extends BaseComponent<InputProps, InputState> {
         if (validateStatus === 'error') {
             inputProps['aria-invalid'] = 'true';
         }
+
+        let wrapperStyle = { ...style };
+        if (onlyBorder!==undefined) {
+            wrapperStyle = {
+                borderWidth: onlyBorder,
+                ...style
+            };
+        }
+
         return (
             // eslint-disable-next-line jsx-a11y/click-events-have-key-events,jsx-a11y/no-static-element-interactions
             <div
                 className={wrapperCls}
-                style={style}
+                style={wrapperStyle}
                 onMouseEnter={e => this.handleMouseOver(e)}
                 onMouseLeave={e => this.handleMouseLeave(e)}
                 onClick={e => this.handleClick(e)}

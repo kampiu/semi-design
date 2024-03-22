@@ -991,6 +991,68 @@ import { Tree, Button } from '@douyinfe/semi-ui';
 
 ```
 
+### Controlled Expansion with Search
+When `expandedKeys` is passed in, it is the expanded controlled component, which can be used with `onExpand`. When the expansion is controlled, if you enable `filterTreeNode` and search, the node will not be automatically expanded. At this time, the expansion of the node is completely controlled by `expandedKeys`. You can use the input parameter `filteredExpandedKeys` (version: >= 2.38.0) of `onSearch` to realize the search expansion effect when the expansion is controlled.
+
+```jsx live=true hideInDSM
+import React, { useState } from 'react';
+import { Tree } from '@douyinfe/semi-ui';
+
+() => {
+    const [expandedKeys, setExpandedKeys] = useState([]);
+    const treeData = [
+        {
+            label: 'Asia',
+            value: 'Asia',
+            key: '0',
+            children: [
+                {
+                    label: 'China',
+                    value: 'China',
+                    key: '0-0',
+                    children: [
+                        {
+                            label: 'Beijing',
+                            value: 'Beijing',
+                            key: '0-0-0',
+                        },
+                        {
+                            label: 'Shanghai',
+                            value: 'Shanghai',
+                            key: '0-0-1',
+                        },
+                    ],
+                },
+                {
+                    label: 'Japan',
+                    value: 'Japan',
+                    key: '0-1',
+                },
+            ],
+        },
+        {
+            label: 'North America',
+            value: 'North America',
+            key: '1',
+        }
+    ];
+    return (
+        <Tree
+            style={{ width: 300 }}
+            treeData={treeData}
+            filterTreeNode
+            expandedKeys={expandedKeys}
+            onExpand={expandedKeys => {
+                setExpandedKeys(expandedKeys);
+            }}
+            onSearch={(inputValue, filteredExpandedKeys) => {
+                setExpandedKeys([...filteredExpandedKeys]);
+            }}
+        />
+    );
+};
+```
+
 ### Controlled Component
 
 You can use `value` along with `onChange` property if you want to use Tree as a controlled component.
@@ -1149,6 +1211,79 @@ class Demo extends React.Component {
         );
     }
 }
+```
+
+### Tree with line
+
+Set the line between nodes through `showLine`, the default is false, supported starting from 2.50.0
+
+```jsx live=true hideInDSM
+import React, { useState, useCallback } from 'react';
+import { Tree, Switch } from '@douyinfe/semi-ui';
+
+() => {
+    const [show, setShow] = useState(true);
+    const onChange = useCallback((value) => {
+        setShow(value);
+    }, []);
+    const treeData = useMemo(() => {
+        return [
+            {
+                label: 'parent-0',
+                key: 'parent-0',
+                children: [
+                    {
+                        label: 'leaf-0-0',
+                        key: 'leaf-0-0',
+                        children: [
+                            {
+                                label: 'leaf-0-0-0',
+                                key: 'leaf-0-0-0',
+                            },
+                            {
+                                label: 'leaf-0-0-1',
+                                key: 'leaf-0-0-1',
+                            },
+                            {
+                                label: 'leaf-0-0-2',
+                                key: 'leaf-0-0-2',
+                            },
+                        ]
+                    },
+                    {
+                        label: 'leaf-0-1',
+                        key: 'leaf-0-1',
+                    }
+                ]
+            },
+            {
+                label: 'parent-1',
+                key: 'parent-1',
+            }
+        ];
+    }, []);
+
+    const style = {
+        width: 260,
+        height: 420,
+        border: '1px solid var(--semi-color-border)'
+    };
+
+    return (
+        <>
+            <div style={{ display: 'flex', alignItems: 'center', columnGap: 5, marginBottom: 5 }}>
+                <strong>showLine </strong>
+                <Switch checked={show} onChange={onChange} />
+            </div>
+            <Tree
+                showLine={show}
+                defaultExpandAll
+                treeData={treeData}
+                style={style}
+            />
+        </>
+    );
+};
 ```
 
 ### Virtualized Tree
@@ -1551,26 +1686,48 @@ import { Tree } from '@douyinfe/semi-ui';
 
 You could use `renderFullLabel` for advanced rendering to render the entire option on you own.
 
-```
-{
-    onClick: Function, // Click the callback of the entire row to control the expansion behavior and selection
-    onContextMenu: Function, // Callback for right-clicking the entire row
-    onDoubleClick: Function,  // Callback for double-clicking the entire row
-    className: strings, // Class name, including built-in styles such as indent, expand button, filter, disable, check, etc.
-    onExpand: Function, // Expand callback
-    data: object, // The original data of the row
-    level: number, // The level where the line is located, which can be used to customize the indentation value
-    style: object, // The style required for virtualization, if virtualization is used, the style must be assigned to the DOM element
-    onCheck: Function, // Multiple selection click callback
-    expandIcon: ReactNode, // Expand button
+The parameter types of renderFullLabel are as follows:
+
+```ts
+type RenderFullLabelProps = {
+    /* The original data of the row */
+    data: BasicTreeNodeData;
+    /* The level of the line can be used to customize the indentation value */
+    level: number;
+    /* The style required for virtualization, if virtualization is used, the style must be assigned to the DOM element */
+    style: any;
+    /* Class name, including built-in styles such as indentation, expand button, filter, disable, select, etc. */
+    className: string;
+    /* icon of Expand button */
+    expandIcon: any;
+    /* Selected state */
     checkStatus: {
-        checked: Boolean, // Whether it is selected in the multi-select state
-        halfChecked: Boolean, // Whether half-selected in multi-select state
-    },
+        /* Whether to select in the multi-select state */
+        checked: boolean;
+        /* Whether to half-select in the multi-select state */
+        halfChecked: boolean
+    };
+    /* Expand status */
     expandStatus: {
-        expanded,
-        loading,
-    },
+        /* Has it been expanded */
+        expanded: boolean;
+        /* Is it unfolding */
+        loading: boolean
+    };
+    /* Whether the node meets the search conditions */
+    filtered: boolean | undefined;
+    /* Current search box input */
+    searchWord: string | undefined;
+    /* Click the callback of the entire row to control the expansion behavior and selection */
+    onClick: (e: MouseEvent) => void;
+    /* Multi-select click callback */
+    onCheck: (e: MouseEvent) => void;
+    /* Right-click the callback for the entire row */
+    onContextMenu: (e: MouseEvent) => void; 
+    /* Double-click the entire line of callback */
+    onDoubleClick: (e: MouseEvent) => void;
+    /* 展开回调 */
+    onExpand: (e: MouseEvent) => void;
 }
 ```
 
@@ -2128,6 +2285,7 @@ import { IconFixedStroked, IconSectionStroked, IconAbsoluteStroked, IconInnerSec
 | expandAction             | Expand logic, one of false, 'click', 'doubleClick'. Default is set to false, which means item will not be expanded on clicking except on expand icon    | boolean \| string   | false | 0.35.0       |
 | expandAll | Set whether to expand all nodes by default. If the subsequent data (`treeData`/`treeDataSimpleJson`) changes, the default expansion will also be affected by this api | boolean | false | 1.30.0 |
 | expandedKeys        | （Controlled）Keys of expanded nodes. Direct child nodes will be displayed.  | string[]                    | -       | - |
+| keyMaps | Customize the key, label, and value fields in the node | object |  - | 2.47.0 |
 | filterTreeNode      | Toggle whether searchable or pass in a function to customize search behavior, data parameter provided since v2.28.0 | boolean \| ((inputValue: string, treeNodeString: string, data?: TreeNodeData) => boolean)  | false   | - |
 | hideDraggingNode | Toggle whether to hide dragImg of dragging node | boolean | false | 1.8.0 | 
 | icon       | Icon | ReactNode         | -       | - |
@@ -2147,6 +2305,7 @@ import { IconFixedStroked, IconSectionStroked, IconAbsoluteStroked, IconInnerSec
 | searchStyle         | Style for for search box           | CSSProperties                      | -       | - |
 | showClear   | Toggle whether to support clear input box | boolean                     | true   | 0.35.0|
 | showFilteredOnly | Toggle whether to displayed filtered result only in search mode | boolean | false | 0.32.0 |
+| showLine | show line between tree nodes | boolean | false | 2.50.0 |
 | style               | Inline style                       | CSSProperties                      | -       | - |
 | treeData            | Data for treeNodes                 | TreeNodeData[]            | \[]     | - |
 | treeDataSimpleJson  | Data for treeNodes in JSON format, return value in JSON format as well    | TreeDataSimpleJson                      | \{}     | - |
@@ -2165,7 +2324,7 @@ import { IconFixedStroked, IconSectionStroked, IconAbsoluteStroked, IconInnerSec
 | onExpand            | Callback function when expand or collapse a node | (expandedKeys: string[], {expanded: boolean, node: TreeNodeData}) => void               | -       | - |
 | onLoad | Callback function when a node is loaded | (loadedKeys: Set< string >, treeNode: TreeNodeData) => void | - | 1.0.0|
 | onContextMenu | Callback function when right click on an item | (e: MouseEvent, node: TreeNodeData) => void | - | 0.35.0 |
-| onSearch            | Callback function when the values for search input changes                | (sunInput: string) => void  | -       | - |
+| onSearch                 | Callback function when search value changes. `filteredExpandedKeys` represents the key of the node expanded due to search or value/defaultValue, which can be used when expandedKeys is controlled<br/> **filteredExpandedKeys is supported in 2.38.0**      | function(input: string, filteredExpandedKeys: string[])  
 | onSelect            | Callback function when selected, return the key property of data          | (selectedKey:string, selected: bool, selectedNode: TreeNodeData) => void | -       | - |
 
 ### TreeNodeData

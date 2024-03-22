@@ -8,14 +8,15 @@ interface Props {
     componentName?: string;
     isColorPalette?: boolean;
     reg?: RegExp;
-    isAnimation?: boolean
+    isAnimation?: boolean;
+    hasTab?: boolean
 }
 
 interface Token {
     key: string;
     value: string;
     category: string;
-    raw: string;
+    raw: string
 }
 
 interface DesignToken {
@@ -24,22 +25,22 @@ interface DesignToken {
     global: {
         global: {
             light: Token[];
-            dark: Token[];
+            dark: Token[]
         };
         palette: {
             light: Token[];
-            dark: Token[];
+            dark: Token[]
         };
         normal: Token[];
-        animation: Token[];
+        animation: Token[]
     };
-    [key: string]: Token[];
+    [key: string]: Token[]
 
 }
 
 
 interface TokenMayWithColor extends Token {
-    color?: string;
+    color?: string
 }
 
 
@@ -59,7 +60,7 @@ const JumpLink = ({ value, availableKeySet }: { value: string; availableKeySet: 
     }
 };
 
-const TokenTable = ({ tokenList, designToken, currentTab, mode = 'light' }: { mode?: 'light' | 'dark', tokenList: TokenMayWithColor[]; designToken: DesignToken; currentTab?: string; }): React.ReactElement => {
+const TokenTable = ({ tokenList, designToken, currentTab, mode = 'light' }: { mode?: 'light' | 'dark'; tokenList: TokenMayWithColor[]; designToken: DesignToken; currentTab?: string }): React.ReactElement => {
     const intl = useIntl();
     const globalTokenJumpAvailableSet = useMemo(() => {
         const global = designToken?.global;
@@ -128,7 +129,7 @@ const TokenTab = ({ designToken, componentName }: { designToken: DesignToken; co
     );
 };
 
-const GlobalTokenTab = ({ designToken, isColorPalette = false, reg }: { designToken: DesignToken; isColorPalette?: boolean; reg: RegExp }): React.ReactElement => {
+const GlobalTokenTab = ({ designToken, isColorPalette = false, reg, hasTab: hasTabInProps = true }: { designToken: DesignToken; isColorPalette?: boolean; reg: RegExp; hasTab?: boolean }): React.ReactElement => {
     const { global, palette, normal } = designToken.global;
     const [currentTab, setCurrentTab] = useState<'light' | 'dark'>('light');
     const [hasTab, setHasTab] = useState(true);
@@ -152,7 +153,7 @@ const GlobalTokenTab = ({ designToken, isColorPalette = false, reg }: { designTo
 
     return (
         <>
-            {hasTab ? (
+            {hasTab && hasTabInProps? (
                 <Tabs defaultActiveKey={'light'} tabList={[{ tab: 'Light', itemKey: 'light' }, { tab: 'Dark', itemKey: 'dark' }]} onChange={(key: typeof currentTab): void => setCurrentTab(key)}>
                     <TokenTable designToken={designToken} tokenList={tokenList} mode={currentTab} />
                 </Tabs>
@@ -169,7 +170,7 @@ const GlobalAnimationToken = ({ designToken }: { designToken: DesignToken }) => 
         animationList.forEach(token => {
             const tab = token['key'].match(/--semi-transition_([\w\W]+)-/)?.[1] ?? "other";
             tokenMap[tab] = [...(tokenMap[tab] ?? []), token];
-        })
+        });
         return tokenMap;
     }, [animationList]);
 
@@ -180,15 +181,15 @@ const GlobalAnimationToken = ({ designToken }: { designToken: DesignToken }) => 
             {Object.entries(tokenMap).map(([category, tokenList]) => {
                 return <Tabs.TabPane tab={category} itemKey={category} key={category}>
                     <TokenTable designToken={designToken} tokenList={tokenList} />
-                </Tabs.TabPane>
+                </Tabs.TabPane>;
             })}
         </Tabs>
-    </>
+    </>;
 
 
 
 
-}
+};
 
 
 const DesignToken = (props: Props): React.ReactElement => {
@@ -228,7 +229,7 @@ const DesignToken = (props: Props): React.ReactElement => {
     return (
         <div>
             {designToken && componentName && !props.isAnimation && (props.componentName === 'global' ?
-                <GlobalTokenTab designToken={designToken} reg={props.reg} isColorPalette={props.isColorPalette} /> :
+                <GlobalTokenTab designToken={designToken} reg={props.reg} isColorPalette={props.isColorPalette} hasTab={props?.hasTab}/> :
                 <TokenTab designToken={designToken} componentName={componentName} />)}
 
             {

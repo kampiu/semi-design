@@ -62,6 +62,139 @@ describe('Select', () => {
         cy.wait(500);
         cy.get('.semi-select-option').should('have.text', 'Design');
     });
+
+    it('optionGroup without key setting, filter',  () => {
+        cy.visit('http://127.0.0.1:6006/iframe.html?path=/story/select--select-option-group');
+        cy.get('#without-key').eq(0).click();
+        cy.get('#without-key .semi-input').eq(0).type('dou');
+        cy.wait(500);
+        cy.get('.semi-select-option-keyword').should('have.text', 'Dou');
+        cy.get('.semi-select-group').should('have.text', 'Group1');
+        cy.get('#without-key .semi-input').eq(0).type('{backspace}{backspace}{backspace}');
+        cy.wait(500);
+        cy.get('.semi-select-group').eq(0).should('have.text', 'Group1');
+        cy.get('.semi-select-group').eq(1).should('have.text', 'Group2');
+        cy.get('.semi-select-option').eq(0).should('have.text', 'Douyin');
+        cy.get('.semi-select-option').eq(1).should('have.text', 'Ulikecam');
+        cy.get('.semi-select-option').eq(2).should('have.text', 'Capcut');
+        cy.get('.semi-select-option').eq(3).should('have.text', 'Xigua');
+    });
+
+    it('blur trigger by mouse click after select option', () => {
+        cy.visit('http://127.0.0.1:6006/iframe.html?path=/story/select--all-case-of-blur', {
+            onBeforeLoad(win) {
+                cy.stub(win.console, 'log').as('consoleLog');
+            },
+        });
+
+        cy.viewport(1000, 1000);
+
+        cy.get('[data-cy=singleDefault]').click();
+        cy.get('.semi-select-option').eq(1).click();
+        cy.root().click('right');
+        cy.get('@consoleLog').should('be.calledWith', 'single autoFocus onBlur');
+        cy.get('@consoleLog').should('be.calledWith', 'single default onBlur');
+
+        cy.get('[data-cy=singleFilter]').click();
+        cy.get('.semi-select-option').eq(1).click();
+        cy.root().click('right');
+        cy.get('@consoleLog').should('be.calledWith', 'single filter onBlur');
+
+        cy.get('[data-cy=singleClickToHide]').click();
+        cy.get('.semi-select-option').eq(1).click();
+        cy.root().click('right');
+        cy.get('@consoleLog').should('be.calledWith', 'single clickToHide onBlur');
+
+        cy.get('[data-cy=singleShowClear]').click();
+        cy.get('.semi-select-option').eq(1).click();
+        cy.root().click('right');
+        cy.get('@consoleLog').should('be.calledWith', 'single showClear onBlur');
+
+        cy.get('[data-cy=multipleDefault]').click();
+        cy.get('.semi-select-option').eq(1).click();
+        cy.root().click('right');
+        cy.get('@consoleLog').should('be.calledWith', 'multiple default onBlur');
+
+        cy.get('[data-cy=multipleFilter]').click();
+        cy.get('.semi-select-option').eq(1).click();
+        cy.root().click('right');
+        cy.get('@consoleLog').should('be.calledWith', 'multiple filter onBlur');
+
+        cy.get('[data-cy=multipleClickToHide]').click();
+        cy.get('.semi-select-option').eq(1).click();
+        cy.root().click('right');
+        cy.get('@consoleLog').should('be.calledWith', 'multiple clickToHide onBlur');
+       
+    });
+
+    it('blur trigger by mouse click without select option', () => {
+        cy.visit('http://127.0.0.1:6006/iframe.html?path=/story/select--all-case-of-blur', {
+            onBeforeLoad(win) {
+                cy.stub(win.console, 'log').as('consoleLog');
+            },
+        });
+
+        cy.viewport(1000, 1000);
+
+        cy.get('[data-cy=singleDefault]').click();
+        cy.root().click('right');
+        cy.get('@consoleLog').should('be.calledWith', 'single autoFocus onBlur');
+        cy.get('@consoleLog').should('be.calledWith', 'single default onBlur');
+
+        cy.get('[data-cy=singleFilter]').click();
+        cy.root().click('right');
+        cy.get('@consoleLog').should('be.calledWith', 'single filter onBlur');
+
+        cy.get('[data-cy=singleClickToHide]').click();
+        cy.root().click('right');
+        cy.get('@consoleLog').should('be.calledWith', 'single clickToHide onBlur');
+
+        cy.get('[data-cy=singleShowClear]').click();
+        cy.root().click('right');
+        cy.get('@consoleLog').should('be.calledWith', 'single showClear onBlur');
+
+        cy.get('[data-cy=multipleDefault]').click();
+        cy.get('.semi-select-option').eq(1).click();
+        cy.root().click('right');
+        cy.get('@consoleLog').should('be.calledWith', 'multiple default onBlur');
+
+        cy.get('[data-cy=multipleFilter]').click();
+        cy.root().click('right');
+        cy.get('@consoleLog').should('be.calledWith', 'multiple filter onBlur');
+
+        cy.get('[data-cy=multipleClickToHide]').click();
+        cy.root().click('right');
+        cy.get('@consoleLog').should('be.calledWith', 'multiple clickToHide onBlur');
+
+    });
+
+    // it('ellipsisTrigger', () => {
+    //     cy.visit('http://127.0.0.1:6006/iframe.html?path=/story/select--fix-1560');
+
+    //     // add option
+    //     cy.get('.semi-select-arrow').eq(0).click();
+    //     cy.get('.semi-select-option').contains('剪映').click();
+    //     cy.get('.semi-tag-grey-light').eq(0).contains('+2');
+
+    //     // reduce option
+    //     cy.get('.semi-select-arrow').eq(0).click();
+    //     cy.get('.semi-select-option').contains('抖音').click();
+    //     cy.get('.semi-tag-large').eq(2).contains('剪映');
+
+    //     cy.get('body').click('right');
+
+    //     // reduce option
+    //     cy.get('.semi-select-arrow').eq(1).click();
+    //     cy.get('.semi-select-option').contains('西瓜视频').click();
+    //     cy.get('.semi-tag-grey-light').eq(0).contains('+1');
+
+    //     // add option
+    //     cy.get('.semi-select-arrow').eq(1).click();
+    //     cy.get('.semi-select-option').contains('西瓜视频').click();
+    //     cy.get('.semi-tag-grey-light').eq(0).contains('+2');
+        
+    // });
+
     // it('should trigger onSearch when click x icon', () => {
     //     cy.visit('http://127.0.0.1:6006/iframe.html?path=/story/select--select-filter-single');
     //     cy.get('.semi-select').eq(0).click();

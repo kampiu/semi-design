@@ -3,7 +3,7 @@
  * https://github.com/react-component/tree/blob/master/src/util.tsx
  */
 
-import { difference, uniq, max, isObject, isNull, isUndefined, isEmpty, pick, get } from 'lodash';
+import { difference, uniq, max, isObject, isNull, isUndefined, isEmpty, pick, get, omit } from 'lodash';
 
 export interface KeyEntities {
     [x: string]: any
@@ -18,6 +18,16 @@ export interface NodeData {
     label: any;
     value: any;
     children?: any
+}
+
+export interface KeyMapProps {
+    key?: string;
+    label?: string;
+    value?: string;
+    disabled?: string;
+    children?: string;
+    isLeaf?: string;
+    icon?: string
 }
 
 const DRAG_OFFSET = 0.45;
@@ -37,23 +47,33 @@ function isValid(val: any) {
  * @param filteredShownKeys
  * need expanded keys, provides `true` means all expanded
  */
-// eslint-disable-next-line max-len
-export function flattenTreeData(treeNodeList: any[], expandedKeys: Set<string>, filteredShownKeys: boolean | Set<any> = false) {
+export function flattenTreeData(treeNodeList: any[], expandedKeys: Set<string>, keyMaps: KeyMapProps, filteredShownKeys: boolean | Set<any> = false) {
     const flattenList: any[] = [];
     const filterSearch = Boolean(filteredShownKeys);
+    const realKeyName = get(keyMaps, 'key', 'key');
+    const realChildrenName = get(keyMaps, 'children', 'children');
     function flatten(list: any[], parent: any = null) {
         return list.map((treeNode, index) => {
             const pos = getPosition(parent ? parent.pos : '0', index);
-            const mergedKey = treeNode.key;
+            const mergedKey = treeNode[realKeyName];
+            const otherData = {};
+            if (keyMaps) {
+                Object.entries(omit(keyMaps, 'children')).forEach(([key, value]) => {
+                    const result = treeNode[value as string];
+                    !isUndefined(result) && (otherData[key] = result);
+                });
+            }
 
             // Add FlattenDataNode into list
             const flattenNode: any = {
                 ...pick(treeNode, ['key', 'label', 'value', 'icon', 'disabled', 'isLeaf']),
+                ...otherData,
                 parent,
                 pos,
                 children: null,
                 data: treeNode,
                 _innerDataTag: true,
+                isEnd: [...(parent ? parent.isEnd : []), index === list.length - 1],
             };
             const isBooleanFilteredShownKeys = typeof filteredShownKeys === 'boolean';
             if (!filterSearch || (!isBooleanFilteredShownKeys && filteredShownKeys.has(mergedKey))) {
@@ -61,9 +81,8 @@ export function flattenTreeData(treeNodeList: any[], expandedKeys: Set<string>, 
             }
 
             // Loop treeNode children
-            // eslint-disable-next-line max-len
             if (expandedKeys.has(mergedKey) && (!filterSearch || (!isBooleanFilteredShownKeys && filteredShownKeys.has(mergedKey)))) {
-                flattenNode.children = flatten(treeNode.children || [], flattenNode);
+                flattenNode.children = flatten(treeNode[realChildrenName] || [], flattenNode);
             } else {
                 flattenNode.children = [];
             }
@@ -102,17 +121,20 @@ export function convertJsonToData(treeJson: TreeDataSimpleJson) {
 /**
  * Traverse all the data by `treeData`.
  */
-export function traverseDataNodes(treeNodes: any[], callback: (data: any) => void) {
+export function traverseDataNodes(treeNodes: any[], callback: (data: any) => void, keyMaps: KeyMapProps) {
+    const realKeyName = get(keyMaps, 'key', 'key');
+    const realChildrenName = get(keyMaps, 'children', 'children');
     const processNode = (node: any, ind?: number, parent?: any) => {
-        const children = node ? node.children : treeNodes;
+        const children = node ? node[realChildrenName] : treeNodes;
         const pos = node ? getPosition(parent.pos, ind) : '0';
         // Process node if is not root
         if (node) {
+            const nodeKey = get(node, realKeyName, null);
             const data = {
                 data: { ...node },
                 ind,
                 pos,
-                key: node.key !== null ? node.key : pos,
+                key: nodeKey !== null ? nodeKey : pos,
                 parentPos: parent.node ? parent.pos : null,
                 level: Number(parent.level) + 1,
             };
@@ -134,7 +156,7 @@ export function traverseDataNodes(treeNodes: any[], callback: (data: any) => voi
 }
 
 /* Convert data to entities map */
-export function convertDataToEntities(dataNodes: any[]) {
+export function convertDataToEntities(dataNodes: any[], keyMaps?: KeyMapProps) {
     const posEntities = {};
     const keyEntities = {};
     const valueEntities = {};
@@ -143,11 +165,12 @@ export function convertDataToEntities(dataNodes: any[]) {
         keyEntities,
         valueEntities,
     };
+    const realValueName = get(keyMaps, 'value', 'value');
 
     traverseDataNodes(dataNodes, (data: any) => {
         const { pos, key, parentPos } = data;
         const entity = { ...data };
-        const value = get(entity, 'data.value', null);
+        const value = get(entity, `data.${realValueName}`, null);
 
         if (value !== null) {
             valueEntities[value] = key;
@@ -162,7 +185,7 @@ export function convertDataToEntities(dataNodes: any[]) {
             entity.parent.children = entity.parent.children || [];
             entity.parent.children.push(entity);
         }
-    });
+    }, keyMaps);
 
     return wrapper;
 }
@@ -317,7 +340,7 @@ export function calcCheckedKeys(values: any, keyEntities: KeyEntities) {
     let halfCheckedKeys = new Set([]);
     let visited: any[] = [];
 
-    const levelMap:{[key: number]: string[]} = getSortedKeyList(keyList, keyEntities);
+    const levelMap: { [key: number]: string[] } = getSortedKeyList(keyList, keyEntities);
 
     const calcCurrLevel = (node: any) => {
         const { key, parent, level } = node;
@@ -369,7 +392,6 @@ export function calcExpandedKeys(keyList: any[] = [], keyEntities: KeyEntities, 
 }
 
 /* Calculate the expanded node by value */
-// eslint-disable-next-line max-len
 export function calcExpandedKeysForValues(value: any, keyEntities: KeyEntities, isMultiple: boolean, valueEntities: any) {
     const keys = findKeysForValues(value, valueEntities, isMultiple);
     return new Set(findAncestorKeys(keys, keyEntities, false));
@@ -400,14 +422,13 @@ export function calcMotionKeys(oldKeySet: Set<string>, newKeySet: Set<string>, k
 /**
  * @returns whether option includes sugInput.
  * When filterTreeNode is a function,returns the result of filterTreeNode which called with (sugInput, target, option).
- * The filteredPath parameter will only be passed in when the Cascader calls the filter function
  */
-export function filter(sugInput: string, option: any, filterTreeNode: any, filterProps: any, filteredPath?: string) {
+export function filter(sugInput: string, option: any, filterTreeNode: any, filterProps: any) {
     if (!filterTreeNode) {
         return true;
     }
     let filterFn = filterTreeNode;
-    let target = filteredPath ?? option;
+    let target = option;
     if (typeof filterTreeNode === 'boolean') {
         filterFn = (targetVal: string, val: any) => {
             const input = targetVal.toLowerCase();
@@ -481,7 +502,6 @@ export function getMotionKeys(eventKey: string, expandedKeys: Set<string>, keyEn
     return res;
 }
 
-// eslint-disable-next-line max-len
 export function calcCheckedKeysForChecked(key: string, keyEntities: KeyEntities, checkedKeys: Set<string>, halfCheckedKeys: Set<string>) {
     const descendantKeys = findDescendantKeys([key], keyEntities, true);
     const nodeItem = keyEntities[key];
@@ -490,10 +510,8 @@ export function calcCheckedKeysForChecked(key: string, keyEntities: KeyEntities,
         if (!node.parent) {
             return;
         }
-        // eslint-disable-next-line @typescript-eslint/no-shadow
         const { key } = node;
         const siblingKeys = findSiblingKeys([key], keyEntities);
-        // eslint-disable-next-line @typescript-eslint/no-shadow
         const allChecked = siblingKeys.every(key => checkedKeys.has(key));
         if (!allChecked) {
             const ancestorKeys = findAncestorKeys([key], keyEntities, false);
@@ -511,7 +529,6 @@ export function calcCheckedKeysForChecked(key: string, keyEntities: KeyEntities,
     };
 }
 
-// eslint-disable-next-line max-len
 export function calcCheckedKeysForUnchecked(key: string, keyEntities: KeyEntities, checkedKeys: Set<string>, halfCheckedKeys: Set<string>) {
     const descendantKeys = findDescendantKeys([key], keyEntities, true);
     const nodeItem = keyEntities[key];
@@ -534,10 +551,8 @@ export function calcCheckedKeysForUnchecked(key: string, keyEntities: KeyEntitie
             return;
         }
         // Has a parent node, and the parent node is checked or halfChecked
-        // eslint-disable-next-line @typescript-eslint/no-shadow
         const { key } = node;
         const siblingKeys = findSiblingKeys([key], keyEntities);
-        // eslint-disable-next-line @typescript-eslint/no-shadow
         const anyChecked = siblingKeys.some(key => checkedKeys.has(key) || halfCheckedKeys.has(key));
         const ancestorKeys = findAncestorKeys([key], keyEntities, false);
         // If there is checked or halfChecked in the sibling node, you need to change the parent node to halfChecked
@@ -575,6 +590,7 @@ export function filterTreeData(info: any) {
         filterTreeNode,
         filterProps,
         prevExpandedKeys,
+        keyMaps
     } = info;
 
     let filteredOptsKeys = [];
@@ -588,7 +604,7 @@ export function filterTreeData(info: any) {
     }
     const shownChildKeys = findDescendantKeys(filteredOptsKeys, keyEntities, true);
     const filteredShownKeys = new Set([...shownChildKeys, ...expandedOptsKeys]);
-    const flattenNodes = flattenTreeData(treeData, new Set(expandedOptsKeys), showFilteredOnly && filteredShownKeys);
+    const flattenNodes = flattenTreeData(treeData, new Set(expandedOptsKeys), keyMaps, showFilteredOnly && filteredShownKeys);
 
     return {
         flattenNodes,
@@ -599,17 +615,19 @@ export function filterTreeData(info: any) {
 }
 
 // return data.value if data.value exist else fall back to key
-export function getValueOrKey(data: any) {
+export function getValueOrKey(data: any, keyMaps?: KeyMapProps) {
+    const valueName = get(keyMaps, 'value', 'value');
+    const keyName = get(keyMaps, 'key', 'key');
     if (Array.isArray(data)) {
-        return data.map(item => get(item, 'value', item.key));
+        return data.map(item => get(item, valueName, item[keyName]));
     }
-    return get(data, 'value', data.key);
+    return get(data, valueName, data[keyName]);
 }
 
 /* Convert value to string */
-export function normalizeValue(value: any, withObject: boolean) {
+export function normalizeValue(value: any, withObject: boolean, keyMaps?: KeyMapProps) {
     if (withObject && isValid(value)) {
-        return getValueOrKey(value);
+        return getValueOrKey(value, keyMaps);
     } else {
         return value;
     }
@@ -620,8 +638,9 @@ export function updateKeys(keySet: Set<string> | string[], keyEntities: KeyEntit
     return keyArr.filter(key => key in keyEntities);
 }
 
-export function calcDisabledKeys(keyEntities: KeyEntities) {
-    const disabledKeys = Object.keys(keyEntities).filter(key => keyEntities[key].data.disabled);
+export function calcDisabledKeys(keyEntities: KeyEntities, keyMaps?: KeyMapProps) {
+    const disabledName = get(keyMaps, 'disabled', 'disabled');
+    const disabledKeys = Object.keys(keyEntities).filter(key => keyEntities[key].data[disabledName]);
     const { checkedKeys } = calcCheckedKeys(disabledKeys, keyEntities);
     return checkedKeys;
 }

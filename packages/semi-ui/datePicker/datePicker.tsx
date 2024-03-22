@@ -1,7 +1,4 @@
 /* eslint-disable jsx-a11y/click-events-have-key-events,jsx-a11y/interactive-supports-focus */
-/* eslint-disable max-len */
-/* eslint-disable jsx-a11y/click-events-have-key-events */
-/* eslint-disable jsx-a11y/no-static-element-interactions */
 import React from 'react';
 import classnames from 'classnames';
 import PropTypes from 'prop-types';
@@ -32,6 +29,7 @@ import { Locale } from '../locale/interface';
 import { TimePickerProps } from '../timePicker/TimePicker';
 import { ScrollItemProps } from '../scrollList/scrollItem';
 import { InsetInputValue, InsetInputChangeProps } from '@douyinfe/semi-foundation/datePicker/inputFoundation';
+import { getDefaultPropsFromGlobalConfig } from "../_utils";
 
 export interface DatePickerProps extends DatePickerFoundationProps {
     'aria-describedby'?: React.AriaAttributes['aria-describedby'];
@@ -138,7 +136,7 @@ export default class DatePicker extends BaseComponent<DatePickerProps, DatePicke
         validateStatus: PropTypes.oneOf(strings.STATUS),
         renderDate: PropTypes.func,
         renderFullDate: PropTypes.func,
-        spacing: PropTypes.number,
+        spacing: PropTypes.oneOfType([PropTypes.number, PropTypes.object]),
         startDateOffset: PropTypes.func,
         endDateOffset: PropTypes.func,
         autoSwitchDate: PropTypes.bool,
@@ -157,8 +155,8 @@ export default class DatePicker extends BaseComponent<DatePickerProps, DatePicke
         yearAndMonthOpts: PropTypes.object,
         onClickOutSide: PropTypes.func,
     };
-
-    static defaultProps = {
+    static __SemiComponentName__ = "DatePicker";
+    static defaultProps = getDefaultPropsFromGlobalConfig(DatePicker.__SemiComponentName__, {
         onChangeWithDateFirst: true,
         borderless: false,
         autoAdjustOverflow: true,
@@ -196,7 +194,7 @@ export default class DatePicker extends BaseComponent<DatePickerProps, DatePicke
         rangeSeparator: strings.DEFAULT_SEPARATOR_RANGE,
         insetInput: false,
         onClickOutSide: noop,
-    };
+    });
 
     triggerElRef: React.MutableRefObject<HTMLElement>;
     panelRef: React.RefObject<HTMLDivElement>;
@@ -409,7 +407,7 @@ export default class DatePicker extends BaseComponent<DatePickerProps, DatePicke
     }
 
     componentDidUpdate(prevProps: DatePickerProps) {
-        if (prevProps.value !== this.props.value) {
+        if (!isEqual(prevProps.value, this.props.value)) {
             this.foundation.initFromProps({
                 ...this.props,
             });

@@ -1,6 +1,6 @@
 ---
 localeCode: en-US
-order: 69
+order: 70
 category: Feedback
 title:  Popconfirm
 subTitle: Popconfirm
@@ -200,7 +200,7 @@ import { Button, Popconfirm, Space } from '@douyinfe/semi-ui';
 
 ### Use with Tooltip or Popover
 
-Please refer to [Use with Tooltip/Popover](/en-US/show/tooltip#Use-with-Popver-or-Popconfirm)
+Please refer to [Use with Tooltip/Popover](https://semi.design/en-US/show/tooltip#Use%20with%20Popver%20or%20Popconfirm)
 
 ## API Reference
 
@@ -214,7 +214,7 @@ Please refer to [Use with Tooltip/Popover](/en-US/show/tooltip#Use-with-Popver-o
 | content            | Content displayed (function type, supported in version 2.30.0)                                                                                                         | ReactNode\|({ initialFocusRef }) => ReactNode        |                     |
 | defaultVisible     | Bubble box is displayed by default                                                                                                                                    | boolean                    |                     | **0.19.0**        |
 | disabled           | Click on the Pop confirmation box to see if the bubbles pop up.                                                                                                       | boolean                    | false               |
-| getPopupContainer  | Specify the parent DOM, and the pop-up layer will be rendered into the DOM. Customization needs to set `position: relative`                                                                                                       | Function():HTMLElement           | () => document.body |
+| getPopupContainer  | Specify the parent DOM, and the pop-up layer will be rendered into the DOM. Customization needs to set `position: relative`   This will change the DOM tree position, but not the view's rendering position.                                                                                                      | Function():HTMLElement           | () => document.body |
 | guardFocus         | When the focus is in the popup layer, toggle whether the Tab makes the focus loop in the popup layer | boolean | true | **2.8.0** |
 | icon               | Custom pop bubble Icon icon                                                                                                                                           |  ReactNode        | <IconAlertTriangle size="extra-large" />    |
 | motion             | Whether there is animation when the drop-down list appears/hidden. You can customize animation by passing in an object that conforms to the structure | boolean | true |
@@ -240,7 +240,7 @@ Please refer to [Use with Tooltip/Popover](/en-US/show/tooltip#Use-with-Popver-o
 
 ### ARIA
 
-For ARIA, please refer to [Popover](https://semi.design/zh-CN/show/popover#ARIA)
+For ARIA, please refer to [Popover](https://semi.design/en-US/show/popover#ARIA)
 
 ### Keyboard and focus
 

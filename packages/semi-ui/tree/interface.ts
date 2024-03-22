@@ -11,6 +11,7 @@ import {
     BasicFlattenNode,
     BasicTreeNodeData,
     BasicOnDragProps,
+    KeyMapProps,
 } from '@douyinfe/semi-foundation/tree/foundation';
 
 /* Tree */
@@ -67,6 +68,7 @@ export interface TreeProps extends BasicTreeProps {
     treeData?: TreeNodeData[];
     value?: Value;
     icon?: ReactNode;
+    keyMaps?: KeyMapProps;
     loadData?: (treeNode?: TreeNodeData) => Promise<void>;
     onChange?: (value?: Value) => void;
     onDoubleClick?: (e: MouseEvent, node: TreeNodeData) => void;
@@ -79,7 +81,7 @@ export interface TreeProps extends BasicTreeProps {
     onExpand?: (expandedKeys: string[], expandedOtherProps: ExpandedOtherProps) => void;
     onLoad?: (loadedKeys?: Set<string>, treeNode?: TreeNodeData) => void;
     onContextMenu?: (e: MouseEvent, node: TreeNodeData) => void;
-    onSelect?: (selectedKeys: string, selected: boolean, selectedNode: TreeNodeData) => void;
+    onSelect?: (selectedKey: string, selected: boolean, selectedNode: TreeNodeData) => void;
     renderDraggingNode?: (nodeInstance: HTMLElement, node: TreeNodeData) => HTMLElement;
     renderFullLabel?: (renderFullLabelProps: RenderFullLabelProps) => ReactNode;
     renderLabel?: (label?: ReactNode, treeNode?: TreeNodeData) => ReactNode
@@ -106,16 +108,17 @@ export interface TreeState extends BasicTreeInnerData {
 }
 
 /* TreeNode */
-export interface TreeNodeProps extends BasicTreeNodeProps{
+export interface TreeNodeProps extends BasicTreeNodeProps {
     children?: TreeNodeData[];
-    icon?: ReactNode
+    icon?: ReactNode;
+    isEnd?: boolean[]
 }
 export interface TreeNodeState {
     [x: string]: any
 }
 
 /* NodeList */
-export interface TreeNodeData extends BasicTreeNodeData{
+export interface TreeNodeData extends BasicTreeNodeData {
     label?: ReactNode;
     icon?: ReactNode;
     children?: TreeNodeData[]
@@ -124,7 +127,8 @@ export interface FlattenNode extends BasicFlattenNode {
     children?: FlattenNode[];
     data?: BasicTreeNodeData;
     label?: ReactNode;
-    parent?: null | FlattenNode
+    parent?: null | FlattenNode;
+    isEnd?: boolean[]
 }
 export interface NodeListProps {
     [x: string]: any;

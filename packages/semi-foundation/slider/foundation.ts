@@ -1,6 +1,3 @@
-/* eslint-disable no-param-reassign */
-/* eslint-disable max-len */
-/* eslint-disable no-nested-ternary */
 import BaseFoundation, { DefaultAdapter } from '../base/foundation';
 import touchEventPolyfill from '../utils/touchPolyfill';
 import warning from '../utils/warning';
@@ -15,6 +12,7 @@ export type tipFormatterBasicType = string | number | boolean | null;
 export interface SliderProps{
     defaultValue?: number | number[];
     disabled?: boolean;
+    showMarkLabel?: boolean;
     included?: boolean; // Whether to juxtapose. Allow dragging
     marks?: Marks; // Scale
     max?: number;
@@ -26,8 +24,11 @@ export interface SliderProps{
     vertical?: boolean;
     onAfterChange?: (value: SliderProps['value']) => void; // triggered when mouse up and clicked
     onChange?: (value: SliderProps['value']) => void;
+    onMouseUp?: (e: any) => void;
+    tooltipOnMark?: boolean;
     tooltipVisible?: boolean;
     style?: Record<string, any>;
+    showArrow?: boolean; 
     className?: string;
     showBoundary?: boolean;
     railStyle?: Record<string, any>;
@@ -35,7 +36,14 @@ export interface SliderProps{
     'aria-label'?: string;
     'aria-labelledby'?: string;
     'aria-valuetext'?: string;
-    getAriaValueText?: (value: number, index?: number) => string
+    getAriaValueText?: (value: number, index?: number) => string;
+    handleDot?: {
+        size?: string;
+        color?: string
+    } & ({
+        size?: string;
+        color?: string
+    }[])
 }
 
 export interface SliderState {
@@ -269,7 +277,6 @@ export default class SliderFoundation extends BaseFoundation<SliderAdapter> {
             startPos = vertical ? sliderY : sliderX;
         }
         //  startPos = chooseMovePos === 'max' && isDrag ? currentPos[0] : startPos;
-        // eslint-disable-next-line one-var
         let endPos;
         if (vertical && verticalReverse) {
             endPos = sliderY;
@@ -314,8 +321,6 @@ export default class SliderFoundation extends BaseFoundation<SliderAdapter> {
         } else {
             stepValue = ((pos - startPos) / len) * (max - min) + min;
         }
-        // debugger
-        // eslint-disable-next-line one-var
         let compareValue;
         if (range) {
             compareValue = isMin ? currentValue[0] : currentValue[1];
@@ -545,7 +550,7 @@ export default class SliderFoundation extends BaseFoundation<SliderAdapter> {
     onHandleLeave = () => {
         // this._adapter.setEventDefault(e);
         const disabled = this._adapter.getState('disabled');
-        if (!disabled) {
+        if (!disabled && this.getStates()['focusPos'] === "") {
             this._adapter.onHandleLeave();
         }
     };
@@ -680,7 +685,6 @@ export default class SliderFoundation extends BaseFoundation<SliderAdapter> {
         }
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function
     onFocus = (e: any, handler: 'min'| 'max') => {
         handlePrevent(e);
         const { target } = e;

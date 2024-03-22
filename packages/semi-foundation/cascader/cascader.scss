@@ -25,7 +25,7 @@ $module: #{$prefix}-cascader;
         border: $width-cascader_hover-border $color-cascader_default-border-hover solid;
     }
 
-    &:focus {
+    &:focus:not(&-disabled) {
         border: $width-cascader_focus-border solid $color-cascader_default-border-focus;
         background-color: $color-cascader_default-bg-default;
         outline: 0;
@@ -137,6 +137,7 @@ $module: #{$prefix}-cascader;
 
             &-disabled.#{$prefix}-tag {
                 color: $color-cascader_input_disabled-text-default;
+                background-color: $color-cascader_tag_disabled-bg-default;
                 cursor: not-allowed;
 
                 .#{$prefix}-tag-close {
@@ -393,6 +394,7 @@ $module: #{$prefix}-cascader;
         padding-left: $spacing-cascader_option-paddingLeft;
         padding-right: $spacing-cascader_option-paddingRight;
     }
+
 
     .#{$module}-option-list {
         box-sizing: border-box;

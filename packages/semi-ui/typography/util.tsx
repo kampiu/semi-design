@@ -39,7 +39,6 @@ const getRenderText = (
     ellipsisStr: string,
     suffix: string,
     ellipsisPos: string
-    // eslint-disable-next-line max-params
 ) => {
     if (content.length === 0) {
         return '';
@@ -61,7 +60,6 @@ const getRenderText = (
     );
 
     // Set shadow
-    const maxWidth = parseInt(originStyle.width);
     ellipsisContainer.setAttribute('style', originCSS);
     ellipsisContainer.style.position = 'fixed';
     ellipsisContainer.style.left = '0';
@@ -79,12 +77,13 @@ const getRenderText = (
         ellipsisContainer
     );
 
-    // Check if ellipsis in measure div is height enough for content
+    // Check if ellipsis in measure div is enough for content
     function inRange() {
-        if (originStyle.whiteSpace === 'nowrap') {
-            return ellipsisContainer.scrollWidth <= maxWidth;
-        }
-        return ellipsisContainer.scrollHeight < maxHeight;
+        // If content does not wrap due to line break strategy, width should be judged to determine whether it's in range
+        const widthInRange = ellipsisContainer.scrollWidth <= ellipsisContainer.offsetWidth;
+        const heightInRange = ellipsisContainer.scrollHeight < maxHeight;
+
+        return rows === 1 ? widthInRange && heightInRange : heightInRange;
     }
 
     // ========================= Find match ellipsis content =========================

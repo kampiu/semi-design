@@ -34,7 +34,11 @@ import {
   Top2Bottom, Top2BottomLeft, Top2BottomRight, Top2TopLeft, Top2TopRight,
   Bottom2Top, Bottom2TopLeft, Bottom2TopRight, Bottom2BottomLeft, Bottom2BottomRight,
  } from './AutoAdjustOverflow';
+ import FixedStringEllipsis from './FixedStringEllipsis';
 
+ export {
+  FixedStringEllipsis,
+ }
 
 export default {
   title: 'Tooltip',
@@ -46,6 +50,12 @@ export default {
 function test(visible) {
   console.log('visible Change:' + visible);
 }
+
+export const ContextMenuTooltip = () => {
+  return <Tooltip content='context menu content' trigger='contextMenu'>
+    <Button>点击右键展开 Tooltip</Button>
+  </Tooltip>
+};
 
 const ScrollDemo = function ScrollDemo(props = {}) {
   const tops = [
@@ -172,23 +182,58 @@ const ScrollDemo = function ScrollDemo(props = {}) {
   );
 };
 
+export const ScaleContainerTooltip = () => {
+
+    return <div>
+        <div id={"scaleContainer"} style={{border: '1px solid red', width: 400, height: 400, transform:'scale(1.5)',transformOrigin:'left'}}>
+            <Tooltip
+                content={
+                    <article>
+                        <p>hi bytedance</p>
+                        <p>hi bytedance</p>
+                    </article>
+                }
+                trigger={'click'}
+                getPopupContainer={()=>document.querySelector("#scaleContainer")}
+            >
+                <Tag style={{'margin': '90px 90px'}}>Tooltip 跟着缩放</Tag>
+            </Tooltip>
+        </div>
+
+        <div  style={{border: '1px solid red', width: 400, height: 400, scale: '1.5',marginTop:500,transformOrigin:'left'}}>
+            <Tooltip
+                content={
+                    <article>
+                        <p>hi bytedance</p>
+                        <p>hi bytedance</p>
+                    </article>
+                }
+                trigger={'click'}
+            >
+                <Tag style={{'margin': '90px 90px'}}>Tooltip 不跟着缩放</Tag>
+            </Tooltip>
+        </div>
+
+    </div>
+}
+
 export const TooltipOnVisibleChange = () => {
-  const [visible, setVisible] = useState(true);
-  return (
-    <div className="demo">
-      <div>
-        <label>受控</label>
-        <Tooltip
-          content={
-            <article>
-              <p>hi bytedance</p>
-              <p>hi bytedance</p>
-            </article>
-          }
-          position="top"
-          onVisibleChange={setVisible}
-          trigger="click"
-          visible={visible}
+    const [visible, setVisible] = useState(true);
+    return (
+        <div className="demo">
+            <div>
+                <label>受控</label>
+                <Tooltip
+                    content={
+                        <article>
+                            <p>hi bytedance</p>
+                            <p>hi bytedance</p>
+                        </article>
+                    }
+                    position="top"
+                    onVisibleChange={setVisible}
+                    trigger="click"
+                    visible={visible}
         >
           <Tag>demo</Tag>
         </Tooltip>
@@ -1542,7 +1587,7 @@ export const wordBreak = () => {
 
   const testContent = {
     '长hash': 'ide2d3a4e9d7b7d93fc4c3b8e4b1b4b08e4f5a9f13ed8b8d6f7c5b7c4c7e4b9e6b9e6e5d4e4c5f6e3b1e7b3a3e3e5c5f4e9c8',
-    'url测试': 'https://semi.bytedance.net/zh-CN/show/tooltip#%E4%BB%85%E5%BD%93%E5%86%85%E5%AE%B9%E5%AE%BD%E5%BA%A6%E8%B6%85%E5%87%BA%E6%97%B6%E5%B1%95%E7%A4%BA%20Tooltip',
+    'url测试': 'https://semi.design/zh-CN/show/tooltip#%E4%BB%85%E5%BD%93%E5%86%85%E5%AE%B9%E5%AE%BD%E5%BA%A6%E8%B6%85%E5%87%BA%E6%97%B6%E5%B1%95%E7%A4%BA%20Tooltip',
     '中文测试': '中文测试中文测试中文测试中文测试中文测试中文测试中文测试中文测试中文测试中文测试中文测试中文测试',
     // 以下为英文中最长的单词
     '英文测试': 'pneumonoultramicroscopicsilicovolcanoconiosis',
@@ -1633,4 +1678,37 @@ export const wordBreak = () => {
     })}
   </>
   );
+}
+
+
+export const TooltipAllAddSpacing = () => (
+  <div className="demo">
+    <ScrollDemo spacing={{ x: 16, y: 16}} />
+    <div
+      style={{
+        padding: 120,
+      }}
+    >
+      <ScrollDemo
+        showArrow={false}
+        spacing={{ x: 16, y: 16}}
+      />
+    </div>
+  </div>
+);
+
+TooltipAllAddSpacing.story = {
+  name: 'tooltip All Add Spacing',
+};
+export const ViewportPrioritJudgment = () => {
+  // If the viewport reverse space is sufficient, the viewport result shall prevail
+  return (
+    <div style={{ height: '1000px' }}>
+      <Tooltip content={"hi bytedance"} position='top'>
+        <Button theme="solid" type="tertiary" style={{ marginBottom: 20, marginTop: 200 }}>
+          悬停显示
+        </Button>
+      </Tooltip>
+    </div>
+  )
 }

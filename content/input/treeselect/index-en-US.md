@@ -1423,8 +1423,9 @@ function Demo() {
 | expandAction             | Expand logic, one of false, 'click', 'doubleClick'. Default is set to false, which means item will not be expanded on clicking except on expand icon    | boolean \| string   | false | 1.4.0        |
 | expandAll | Set whether to expand all nodes by default. If the data (`treeData`) changes, the default expansion will still be affected by this api | boolean | false | 1.30.0 |
 | expandedKeys        | （Controlled）Keys of expanded nodes. Direct child nodes will be displayed.  | string[]                    | -       | 0.32.0 |
+| keyMaps | Customize the key, label, and value fields in the node | object |  - | 2.47.0 |
 | filterTreeNode           | Toggle whether searchable or pass in a function to customize search behavior, data parameter provided since v2.28.0 | boolean\|(inputValue: string, treeNodeString: TreeNodeString, data?: TreeNodeData) => boolean | false       | -       |
-| getPopupContainer        | Container to render pop-up, you need to set 'position: relative`                                                    | function():HTMLElement                                            | -           | -       |
+| getPopupContainer        | Container to render pop-up, you need to set 'position: relative`  This will change the DOM tree position, but not the view's rendering position.                                                    | function():HTMLElement                                            | -           | -       |
 | insetLabel               | Prefix alias，used mainly in Form                                                   | ReactNode                                                         | -           | 0.28.0  |
 | labelEllipsis | Toggle whether to ellipsis label when overflow | boolean | false\|true(virtualized) | 1.8.0 |  
 | leafOnly | Toggle whether to display tags for leaf nodes only and for onChange callback params in multiple mode | boolean | false |0.32.0 |
@@ -1449,6 +1450,7 @@ function Demo() {
 | searchPosition | Set the position of the search box, one of: `dropdown`、`trigger` | string | `dropdown` | 1.29.0 |
 | showClear | When the value is not empty, whether the trigger displays the clear button | boolean | false |  |
 | showFilteredOnly | Toggle whether to displayed filtered result only in search mode | boolean | false | 0.32.0 |
+| showLine | The option in the options panel shows connecting lines | boolean | false | 2.50.0 |
 | showRestTagsPopover | When the number of tags exceeds maxTagCount and hover reaches +N, whether to display the remaining content through Popover | boolean | false | 2.22.0 |
 | showSearchClear | Toggle whether to support clear search box | boolean | true | 0.35.0 |
 | size                     | Size for input box，one of `large`，`small`，`default`                              | string                                                            | `default`   | -       |
@@ -1466,6 +1468,7 @@ function Demo() {
 | onFocus                 | Callback function when treeSelect focus  | function(event)                            | -           | -       |
 | onChange                 | Callback function when the tree node is selected, return the value property of data | Function                           | -           | -       |
 | onChangeWithObject        | Toggle whether to return all properties in an option as a return value. When set to true, onChange turn to Function(node, e)   | boolean                     | false   | 1.0.0 |
+| onClear     | Callback triggered when clear button is clicked   | (e: Event) => void |  -  |   2.52.0  |
 | onExpand                 | Callback function when expand or collapse a node                                    | <ApiType detail='(expandedKeys:array, {expanded: bool, node}) => void'>(expandedKeys, object) => void</ApiType>             | -           | -       |
 | onLoad | Callback function when a node is loaded | <ApiType detail='(loadedKeys: Set<string\>, treeNode: TreeNodeData) => void'>(loadedKeys, treeNode) => void</ApiType> | - | 1.32.0|
 | onSearch                 | Callback function when search value changes. `filteredExpandedKeys` represents the key of the node expanded due to search or value/defaultValue, which can be used when expandedKeys is controlled<br/> **filteredExpandedKeys is supported in 2.6.0**      | function(input: string, filteredExpandedKeys: string[])                                        | -           |     |

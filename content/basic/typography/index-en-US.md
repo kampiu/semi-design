@@ -1,6 +1,6 @@
 ---
 localeCode: en-US
-order: 18
+order: 19
 category: Basic
 title:  Typography
 subTitle: Typography
@@ -224,10 +224,10 @@ function Demo() {
 
     function Infos() {
         const data = [
-            { type: 'Stars', min: '6700' },
-            { type: 'Fork', min: '500' },
-            { type: 'Downloads', min: '3000000' },
-            { type: 'Contributors', min: '90' }
+            { type: 'Stars', min: '7100' },
+            { type: 'Fork', min: '560' },
+            { type: 'Downloads', min: '5000000' },
+            { type: 'Contributors', min: '100' }
         ];
         return data.map(item =>
             <p key={item.min}>
@@ -319,15 +319,19 @@ Show ellipsis if text is overflowed. Refer to [Ellipsis Config](#Ellipsis-Config
 <Notice title='Notice'>
     1. ellipsis only supports truncation of plain text, and does not support complex types such as reactNode. Please ensure that the content type of children is string <br/><br/>
     2. To achieve abbreviation, ellipsis needs to have a clear width or maxWidth limit for comparison and judgment. If the width is not set by itself (for example, purely relying on the flex property to expand), or the width is an indefinite value such as 100%, the parent needs to have a clear width or maxWidth<br/><br/>
-    3. Ellipsis needs to obtain information such as the width and height of the DOM to make basic judgments. If there is a display:none style in itself or the parent, the value will be incorrect, and the abbreviation will be invalid at this time<br/>
+    3. Ellipsis needs to obtain information such as the width and height of the DOM to make basic judgments. If there is a display:none style in itself or the parent, the value will be incorrect, and the abbreviation will be invalid at this time<br/><br/>
+    4. For more information on ellipsis see <a href="#faq">FAQ</a> 
 </Notice>
 
 ```jsx live=true
 import React from 'react';
-import { Typography } from '@douyinfe/semi-ui';
+import { Typography, Tooltip } from '@douyinfe/semi-ui';
 
 function Demo() {
     const { Paragraph, Text, Title } = Typography;
+    const customRenderTooltip = useCallback((content, children) => {
+        return <Tooltip content={content} style={{ backgroundColor: 'var(--semi-color-primary)' }}>{children}</Tooltip>;
+    }, []);
 
     return (
         <div>
@@ -365,6 +369,19 @@ function Demo() {
             <Paragraph ellipsis={{ rows: 3, expandable: true, collapsible: true, collapseText: 'Show Less', onExpand: (bool, e) => console.log(bool, e) }} style={{ width: 300 }}>
                 {`Expandable and collapsible: Life's but a walking shadow, a poor player, that struts and frets his hour upon the stage, and then is heard no more; it is a tale told by an idiot, full of sound and fury, signifying nothing.`}
             </Paragraph>
+            <br />
+            <Title 
+                heading={6} 
+                ellipsis={{ 
+                    showTooltip: {
+                        renderTooltip: customRenderTooltip
+                    }
+                }} 
+                style={{ width: 250 }}
+                
+            >
+                Custom tooltip with a blue background color
+            </Title>
         </div>
     );
 }
@@ -517,7 +534,7 @@ function Demo() {
 | expandable   | Toggle whether text is expandable                                                                                                                                                            | boolean                                             | false      |
 | pos          | Position to start ellipsis, one of `end`, `middle`                                                                                                                                           | string                                              | `end`      |
 | rows         | Number of rows that should not be truncated                                                                                                                                                  | number                                              | 1          |
-| showTooltip  | Toggle whether to show tooltip, if passed in as object: type，type of component to show tooltip, one of `Tooltip`, `Popover`; opts, properties that will be passed directly to the component | boolean\|{type: 'tooltip'\|'popover', opts: object} | false      |
+| showTooltip  | Toggle whether to show tooltip, if passed in as object: type，type of component to show tooltip, one of `Tooltip`, `Popover`; opts, properties that will be passed directly to the component; renderTooltip, custom rendering popup layer component | boolean\|{type: 'tooltip'\|'popover', opts: object, renderTooltip: ((content: ReactNode, children: ReactNode)) => ReactNode} | false      |
 | suffix       | Text suffix that will not be truncated                                                                                                                                                       | string                                              | -          |
 | onExpand     | Callback when expand or collapse                                                                                                                                                             | function(expanded: bool, Event: e)                  | -          |
 
@@ -569,3 +586,13 @@ function Demo() {
 
 ## Design Tokens
 <DesignToken/>
+
+## FAQ
+
+- **What are the specific mechanism and precautions of Typography ellipsis?**
+
+    Semi ellipsis has two strategies, CSS ellipsis and JS ellipsis. When setting middle truncation (pos='middle')、 expandable、 suffix is not empty string、copyable, the JS ellipsis strategy is enabled. Otherwise, enable the CSS ellipsis strategy.
+
+    In general CSS truncation performance is better than JS truncation. when the children and container size remain unchanged, CSS truncation only involves 1~2 calculations, while js truncation is based on dichotomy and may require multiple calculations.
+
+    Pay attention to performance consumption when using a large number of Typography with ellipsis. For example, in Table, you can reduce performance loss by setting a reasonable pageSize for paging.

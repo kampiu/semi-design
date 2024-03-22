@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import { strings } from './constants';
 import BaseFoundation, { DefaultAdapter } from '../base/foundation';
 import {
@@ -203,8 +202,8 @@ class TimePickerFoundation<P = Record<string, any>, S = Record<string, any>> ext
         const { value, timeZone, __prevTimeZone } = props;
         
         let dates = this.parseValue(value);
-        const invalid = this.validateDates(dates);
 
+        let invalid = dates.some(d => isNaN(Number(d)));
         if (!invalid) {
             if (this.isValidTimeZone(timeZone)) {
                 dates = dates.map(date =>
@@ -214,14 +213,17 @@ class TimePickerFoundation<P = Record<string, any>, S = Record<string, any>> ext
                     )
                 );
             }
-            const inputValue = this.formatValue(dates);
-
-            this.setState({
-                value: dates,
-                invalid,
-                inputValue,
-            } as any);
+            invalid = dates.some(d =>
+                this.isDisabledHMS({ hours: d.getHours(), minutes: d.getMinutes(), seconds: d.getSeconds() })
+            );
         }
+        const inputValue = this.formatValue(dates);
+
+        this.setState({
+            value: dates,
+            invalid,
+            inputValue,
+        } as any);
     }
 
     handleFocus(e: any) {

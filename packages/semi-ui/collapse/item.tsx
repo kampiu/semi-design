@@ -16,12 +16,14 @@ export interface CollapsePanelProps {
     reCalcKey?: number | string;
     style?: CSSProperties;
     showArrow?: boolean;
-    disabled?: boolean
+    disabled?: boolean;
+    onMotionEnd?: () => void
 }
 
 export default class CollapsePanel extends PureComponent<CollapsePanelProps> {
     static contextType: React.Context<CollapseContextType> = CollapseContext;
     headerExpandIconTriggerRef = React.createRef<HTMLElement>()
+    private ariaID: string = ""
     static propTypes = {
         itemKey: PropTypes.string,
         extra: PropTypes.node,
@@ -43,9 +45,13 @@ export default class CollapsePanel extends PureComponent<CollapsePanelProps> {
         disabled: false,
     };
 
-    private ariaID = getUuidShort({});
 
     context: CollapseContextType;
+
+
+    componentDidMount() {
+        this.ariaID = getUuidShort({});
+    }
 
     renderHeader(active: boolean, expandIconEnable = true) {
         const {
@@ -67,7 +73,6 @@ export default class CollapsePanel extends PureComponent<CollapsePanelProps> {
         const icon = (
             <span ref={this.headerExpandIconTriggerRef} aria-hidden='true' className={cls([`${cssClasses.PREFIX}-header-icon`,
                 { [`${cssClasses.PREFIX}-header-iconDisabled`]: !expandIconEnable }])}>
-                {/* eslint-disable-next-line no-nested-ternary */}
                 {expandIconEnable ? (active ? collapseIcon : expandIcon) : expandIcon}
             </span>
         );
@@ -151,6 +156,7 @@ export default class CollapsePanel extends PureComponent<CollapsePanelProps> {
                     children && (
                         <Collapsible
                             isOpen={active} keepDOM={keepDOM} motion={motion}
+                            onMotionEnd={this.props.onMotionEnd}
                             reCalcKey={reCalcKey}>
                             <div
                                 className={contentCls}

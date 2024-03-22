@@ -1,5 +1,3 @@
-/* eslint-disable max-lines-per-function */
-/* eslint-disable react/no-find-dom-node */
 import React, { CSSProperties } from 'react';
 import ReactDOM from 'react-dom';
 import PropTypes from 'prop-types';
@@ -34,6 +32,7 @@ export default class Slider extends BaseComponent<SliderProps, SliderState> {
         // allowClear: PropTypes.bool,
         defaultValue: PropTypes.oneOfType([PropTypes.number, PropTypes.array]),
         disabled: PropTypes.bool,
+        showMarkLabel: PropTypes.bool,
         included: PropTypes.bool, // Whether to juxtapose. Allow dragging
         marks: PropTypes.object, // Scale
         max: PropTypes.number,
@@ -45,22 +44,40 @@ export default class Slider extends BaseComponent<SliderProps, SliderState> {
         vertical: PropTypes.bool,
         onAfterChange: PropTypes.func, // OnmouseUp and triggered when clicked
         onChange: PropTypes.func,
+        onMouseUp: PropTypes.func,
+        tooltipOnMark: PropTypes.bool,
         tooltipVisible: PropTypes.bool,
+        showArrow: PropTypes.bool, 
         style: PropTypes.object,
         className: PropTypes.string,
         showBoundary: PropTypes.bool,
         railStyle: PropTypes.object,
         verticalReverse: PropTypes.bool,
         getAriaValueText: PropTypes.func,
+        handleDot: PropTypes.oneOfType([
+            PropTypes.shape({
+                size: PropTypes.string,
+                color: PropTypes.string,
+            }),
+            PropTypes.arrayOf(
+                PropTypes.shape({
+                    size: PropTypes.string,
+                    color: PropTypes.string,
+                })
+            ),
+        ]),
     } as any;
 
     static defaultProps: Partial<SliderProps> = {
         // allowClear: false,
         disabled: false,
+        showMarkLabel: true,
+        tooltipOnMark: false,
         included: true, // No is juxtaposition. Allow dragging
         max: 100,
         min: 0,
         range: false, // Whether both sides
+        showArrow: true, 
         step: 1,
         tipFormatter: (value: tipFormatterBasicType | tipFormatterBasicType[]) => value,
         vertical: false,
@@ -87,7 +104,6 @@ export default class Slider extends BaseComponent<SliderProps, SliderState> {
             value = this.props.defaultValue;
         }
         this.state = {
-            // eslint-disable-next-line no-nested-ternary
             currentValue: value ? value : this.props.range ? [0, 0] : 0,
             min: this.props.min || 0,
             max: this.props.max || 0,
@@ -189,7 +205,7 @@ export default class Slider extends BaseComponent<SliderProps, SliderState> {
             getMaxHandleEl: () => this.maxHanleEl.current,
             onHandleDown: (e: React.MouseEvent) => {
                 this._addEventListener(document.body, 'mousemove', this.foundation.onHandleMove, false);
-                this._addEventListener(document.body, 'mouseup', this.foundation.onHandleUp, false);
+                this._addEventListener(window, 'mouseup', this.foundation.onHandleUp, false);
                 this._addEventListener(document.body, 'touchmove', this.foundation.onHandleTouchMove, false);
             },
             onHandleMove: (mousePos: number, isMin: boolean, stateChangeCallback = noop, clickTrack = false, outPutValue): boolean | void => {
@@ -243,6 +259,7 @@ export default class Slider extends BaseComponent<SliderProps, SliderState> {
                 this.setState({ focusPos: '' });
             },
             onHandleUpBefore: (e: React.MouseEvent) => {
+                this.props.onMouseUp?.(e);
                 e.stopPropagation();
                 e.preventDefault();
                 document.body.removeEventListener('mousemove', this.foundation.onHandleMove, false);
@@ -314,6 +331,7 @@ export default class Slider extends BaseComponent<SliderProps, SliderState> {
         const handleContents = !range ? (
             <Tooltip
                 content={tipChildren.min}
+                showArrow={this.props.showArrow}
                 position="top"
                 trigger="custom"
                 rePosKey={minPercent}
@@ -365,7 +383,12 @@ export default class Slider extends BaseComponent<SliderProps, SliderState> {
                     aria-valuenow={currentValue as number}
                     aria-valuemax={max}
                     aria-valuemin={min}
-                />
+                >
+                    {this.props.handleDot && <div className={cssClasses.HANDLE_DOT} style={{
+                        ...(this.props.handleDot?.size?{ width: this.props.handleDot.size, height: this.props.handleDot.size }:{}),
+                        ...(this.props.handleDot?.color?{ backgroundColor: this.props.handleDot.color }:{}),
+                    }}/>}
+                </span>
             </Tooltip>
         ) : (
             <React.Fragment>
@@ -421,7 +444,12 @@ export default class Slider extends BaseComponent<SliderProps, SliderState> {
                         aria-valuenow={currentValue[0]}
                         aria-valuemax={currentValue[1]}
                         aria-valuemin={min}
-                    />
+                    >
+                        {this.props.handleDot?.[0] && <div className={cssClasses.HANDLE_DOT} style={{
+                            ...(this.props.handleDot[0]?.size?{ width: this.props.handleDot[0].size, height: this.props.handleDot[0].size }:{}),
+                            ...(this.props.handleDot[0]?.color?{ backgroundColor: this.props.handleDot[0].color }:{}),
+                        }}/>}
+                    </span>
                 </Tooltip>
                 <Tooltip
                     content={tipChildren.max}
@@ -475,7 +503,12 @@ export default class Slider extends BaseComponent<SliderProps, SliderState> {
                         aria-valuenow={currentValue[1]}
                         aria-valuemax={max}
                         aria-valuemin={currentValue[0]}
-                    />
+                    >
+                        {this.props.handleDot?.[1] && <div className={cssClasses.HANDLE_DOT} style={{
+                            ...(this.props.handleDot[1]?.size?{ width: this.props.handleDot[1].size, height: this.props.handleDot[1].size }:{}),
+                            ...(this.props.handleDot[1]?.color?{ backgroundColor: this.props.handleDot[1].color }:{}),
+                        }}/>}
+                    </span> 
                 </Tooltip>
             </React.Fragment>
         );
@@ -516,14 +549,15 @@ export default class Slider extends BaseComponent<SliderProps, SliderState> {
                             [`${prefixCls}-dot-active`]: this.foundation.isMarkActive(Number(mark)) === 'active',
                         });
                         const markPercent = (Number(mark) - min) / (max - min);
-                        return activeResult ? (
-                            // eslint-disable-next-line jsx-a11y/no-static-element-interactions
+                        const dotDOM = // eslint-disable-next-line jsx-a11y/no-static-element-interactions
                             <span
                                 key={mark}
                                 onClick={this.foundation.handleWrapClick}
                                 className={markClass}
                                 style={{ [stylePos]: `calc(${markPercent * 100}% - 2px)` }}
-                            />
+                            />;
+                        return activeResult ? (
+                            this.props.tooltipOnMark?<Tooltip content={marks[mark]}>{dotDOM}</Tooltip>:dotDOM
                         ) : null;
                     })}
                 </div>
@@ -532,6 +566,9 @@ export default class Slider extends BaseComponent<SliderProps, SliderState> {
     };
 
     renderLabel = () => {
+        if (!this.props.showMarkLabel) {
+            return null;
+        }
         const { min, max, vertical, marks, verticalReverse } = this.props;
         const stylePos = vertical ? 'top' : 'left';
         const labelContent =
@@ -616,7 +653,7 @@ export default class Slider extends BaseComponent<SliderProps, SliderState> {
         return slider;
     }
 
-    private _addEventListener<T extends keyof HTMLElementEventMap>(target: HTMLElement, eventName: T, callback: (e: HTMLElementEventMap[T]) => void, ...rests: any) {
+    private _addEventListener<T extends keyof (HTMLElementEventMap & WindowEventMap)>(target: HTMLElement | Window, eventName: T, callback: EventListenerOrEventListenerObject, ...rests: any) {
         if (target.addEventListener) {
             target.addEventListener(eventName, callback, ...rests);
             const clearSelf = () => {

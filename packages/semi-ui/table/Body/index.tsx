@@ -1,6 +1,3 @@
-/* eslint-disable eqeqeq */
-/* eslint-disable @typescript-eslint/member-ordering */
-/* eslint-disable max-len */
 import React, { ReactNode } from 'react';
 import PropTypes from 'prop-types';
 import { get, size, isMap, each, isEqual, pick, isNull, isFunction } from 'lodash';
@@ -25,9 +22,9 @@ import Store from '@douyinfe/semi-foundation/utils/Store';
 import BaseComponent, { BaseProps } from '../../_base/baseComponent';
 import { logger } from '../utils';
 import ColGroup from '../ColGroup';
-import BaseRow from './BaseRow';
+import BaseRow, { baseRowPropTypes } from './BaseRow';
 import ExpandedRow from './ExpandedRow';
-import SectionRow from './SectionRow';
+import SectionRow, { sectionRowPropTypes } from './SectionRow';
 import TableHeader from '../TableHeader';
 import ConfigContext from '../../configProvider/context';
 import TableContext, { TableContextProps } from '../table-context';
@@ -76,7 +73,8 @@ export interface BodyProps extends BaseProps {
     rowExpandable?: RowExpandable<Record<string, any>>;
     renderExpandIcon: (record: Record<string, any>, isNested: boolean) => ReactNode | null;
     headerRef?: React.MutableRefObject<HTMLDivElement> | ((instance: any) => void);
-    onScroll?: VirtualizedOnScroll
+    onScroll?: VirtualizedOnScroll;
+    keepDOM?: boolean
 }
 
 export interface BodyState {
@@ -155,7 +153,7 @@ class Body extends BaseComponent<BodyProps, BodyState> {
                 getVirtualizedListRef(this.listRef);
             } else {
                 console.warn('getVirtualizedListRef only works with virtualized. ' +
-                    'See https://semi.design/zh-CN/show/table for more information.');
+                    'See https://semi.design/en-US/show/table for more information.');
             }
         }
         this.foundation = new BodyFoundation(this.adapter);
@@ -321,7 +319,6 @@ class Body extends BaseComponent<BodyProps, BodyState> {
         const { virtualizedData, cachedExpandBtnShouldInRow } = this.state;
         const { flattenedColumns } = this.context;
         const virtualizedItem: any = get(virtualizedData, [index], {});
-        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         const { key, parentKeys, expandedRow, sectionRow, ...rest } = virtualizedItem;
         const rowWidth = this.getVirtualizedRowWidth();
 
@@ -338,7 +335,6 @@ class Body extends BaseComponent<BodyProps, BodyState> {
             index,
             expandBtnShouldInRow,
         };
-        // eslint-disable-next-line no-nested-ternary
         return sectionRow ?
             this.renderSectionRow(props) :
             expandedRow ?
@@ -365,10 +361,8 @@ class Body extends BaseComponent<BodyProps, BodyState> {
     // virtualized List outerElementType
     renderOuter = React.forwardRef<HTMLDivElement, any>((props: any, ref: React.MutableRefObject<HTMLDivElement> | ((instance: HTMLDivElement) => void)) => {
         const { children, ...rest } = props;
-        // eslint-disable-next-line react/no-this-in-sfc
         const { handleWheel, prefixCls, emptySlot, dataSource } = this.props;
 
-        // eslint-disable-next-line react/no-this-in-sfc
         const tableWidth = this.getVirtualizedRowWidth();
         const tableCls = classnames(`${prefixCls}`, `${prefixCls}-fixed`);
 
@@ -385,7 +379,6 @@ class Body extends BaseComponent<BodyProps, BodyState> {
                     }
                 }}
                 onScroll={(...args) => {
-                    // eslint-disable-next-line react/no-this-in-sfc
                     this.handleVirtualizedBodyScroll(...args);
                     if (rest.onScroll) {
                         rest.onScroll(...args);
@@ -464,7 +457,7 @@ class Body extends BaseComponent<BodyProps, BodyState> {
      */
     renderSectionRow = (props: RenderSectionRowProps = { groupKey: undefined }) => {
         const { dataSource, rowKey, group, groupKey, index } = props;
-        const sectionRowPickKeys = Object.keys(SectionRow.propTypes);
+        const sectionRowPickKeys = Object.keys(sectionRowPropTypes);
         const sectionRowProps: any = pick(props, sectionRowPickKeys);
 
         const { handleRowExpanded } = this.context;
@@ -496,6 +489,7 @@ class Body extends BaseComponent<BodyProps, BodyState> {
             index,
             rowKey,
             virtualized,
+            displayNone
         } = props;
         let key = getRecordKey(record, rowKey);
 
@@ -524,6 +518,7 @@ class Body extends BaseComponent<BodyProps, BodyState> {
                 virtualized={virtualized}
                 key={genExpandedRowKey(key)}
                 cellWidths={this.cellWidths}
+                displayNone={displayNone}
             />
         );
     };
@@ -548,7 +543,7 @@ class Body extends BaseComponent<BodyProps, BodyState> {
             expandRowByClick,
         } = props;
 
-        const baseRowPickKeys = Object.keys(BaseRow.propTypes);
+        const baseRowPickKeys = Object.keys(baseRowPropTypes);
         const baseRowProps: Record<string, any> = pick(props, baseRowPickKeys);
 
         let key = getRecordKey(record, rowKey);
@@ -603,7 +598,7 @@ class Body extends BaseComponent<BodyProps, BodyState> {
      * @returns {ReactNode[]} renderedRows
      */
     renderGroupedRows = () => {
-        const { groups, dataSource: data, rowKey, expandedRowKeys } = this.props;
+        const { groups, dataSource: data, rowKey, expandedRowKeys, keepDOM } = this.props;
         const { flattenedColumns } = this.context;
         const groupsInData = new Map();
         const renderedRows: ReactNode[] = [];
@@ -643,7 +638,7 @@ class Body extends BaseComponent<BodyProps, BodyState> {
             );
 
             // Render the grouped content when the group is expanded
-            if (expanded) {
+            if (expanded || keepDOM) {
                 const dataInGroup: any[] = [];
 
                 group.forEach((recordKey: string) => {
@@ -657,20 +652,21 @@ class Body extends BaseComponent<BodyProps, BodyState> {
                 /**
                  * Render the contents of the group row
                  */
-                renderedRows.push(this.renderBodyRows(dataInGroup));
+                renderedRows.push(this.renderBodyRows(dataInGroup, undefined, [], !expanded));
             }
         });
 
         return renderedRows;
     };
 
-    renderBodyRows(data: Record<string, any>[] = [], level = 0, renderedRows: ReactNode[] = []) {
+    renderBodyRows(data: Record<string, any>[] = [], level = 0, renderedRows: ReactNode[] = [], displayNone = false) {
         const {
             rowKey,
             expandedRowRender,
             expandedRowKeys,
             childrenRecordName,
             rowExpandable,
+            keepDOM
         } = this.props;
 
         const hasExpandedRowRender = typeof expandedRowRender === 'function';
@@ -692,6 +688,7 @@ class Body extends BaseComponent<BodyProps, BodyState> {
                     ...this.props,
                     columns: flattenedColumns,
                     expandBtnShouldInRow,
+                    displayNone,
                     record,
                     key,
                     level,
@@ -701,7 +698,8 @@ class Body extends BaseComponent<BodyProps, BodyState> {
 
             // render expand row
             const expanded = isExpanded(expandedRowKeys, key);
-            if (hasExpandedRowRender && rowExpandable && rowExpandable(record) && expanded) {
+            const shouldRenderExpandedRows = expanded || keepDOM;
+            if (hasExpandedRowRender && rowExpandable && rowExpandable(record) && shouldRenderExpandedRows) {
                 const currentExpandRow = this.renderExpandedRow({
                     ...this.props,
                     columns: flattenedColumns,
@@ -709,6 +707,7 @@ class Body extends BaseComponent<BodyProps, BodyState> {
                     index,
                     record,
                     expanded,
+                    displayNone: displayNone || !expanded,
                 });
                 /**
                   * If expandedRowRender returns falsy, this expanded row will not be rendered
@@ -720,8 +719,8 @@ class Body extends BaseComponent<BodyProps, BodyState> {
             }
 
             // render tree data
-            if (recordHasChildren && expanded) {
-                const nestedRows = this.renderBodyRows(recordChildren, level + 1);
+            if (recordHasChildren && shouldRenderExpandedRows) {
+                const nestedRows = this.renderBodyRows(recordChildren, level + 1, [], displayNone || !expanded);
                 renderedRows.push(...nestedRows);
             }
         });
@@ -846,7 +845,9 @@ export interface RenderExpandedRowProps {
     index?: number;
     rowKey?: RowKey<Record<string, any>>;
     virtualized?: Virtualized;
-    level?: number
+    level?: number;
+    keepDOM?: boolean;
+    displayNone?: boolean
 }
 
 export interface RenderSectionRowProps {

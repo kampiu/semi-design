@@ -438,7 +438,7 @@ import { Cascader, Typography, Checkbox } from '@douyinfe/semi-ui';
                 onClick={onCheck}
             > 
                 <Checkbox
-                    onClick={onCheck}
+                    onChange={onCheck}
                     indeterminate={checkStatus.halfChecked}
                     checked={checkStatus.checked}
                     style={{ marginRight: 8 }}
@@ -458,7 +458,7 @@ import { Cascader, Typography, Checkbox } from '@douyinfe/semi-ui';
             <p>鼠标 hover 到选项可查看被省略文本完整内容</p>
             <br />
             <Cascader
-                style={{ width: 300 }}
+                style={{ width: 320 }}
                 treeData={treeData}
                 placeholder="单选，输入 s 自定义搜索选项渲染结果"
                 filterTreeNode
@@ -467,7 +467,7 @@ import { Cascader, Typography, Checkbox } from '@douyinfe/semi-ui';
             <br />
             <Cascader
                 multiple
-                style={{ width: 300, marginTop: 20 }}
+                style={{ width: 320, marginTop: 20 }}
                 treeData={treeData}
                 placeholder="多选，输入 s 自定义搜索选项渲染结果"
                 filterTreeNode
@@ -477,6 +477,77 @@ import { Cascader, Typography, Checkbox } from '@douyinfe/semi-ui';
     );
 };
 
+```
+
+如果搜索结果中存在大量 Option，可以通过设置 virtualizeInSearch 开启搜索结果面板的虚拟化来优化性能，virtualizeInSearch 自 v2.44.0 提供。virtualizeInSearch 是一个包含下列值的对象：
+
+- height: Option 列表高度值
+- width: Option 列表宽度值
+- itemSize: 每行 Option 的高度
+
+```jsx live=true
+import React from 'react';
+import { Cascader, Checkbox, Typography } from '@douyinfe/semi-ui';
+
+() => {
+    const treeData = useMemo(() => (
+        ['通用', '场景'].map((label, m) => ({
+            label: label,
+            value: m,
+            children: new Array(100).fill(0).map((item, n)=> ({
+                value: `${m}-${n}`,
+                label: `${m}-${n} 第二级`,
+                children: new Array(20).fill(0).map((item, o)=> ({
+                    value: `${m}-${n}-${o}`,
+                    label: `${m}-${n}-${o} 第三级详细内容`,
+                })),
+            }))
+        }))
+    ), []);
+    
+    let virtualize = {
+        // 高度为面板默认高度为 180px 减去上下padding 2 * 8px
+        height: 172,
+        width: 320,
+        itemSize: 36, 
+    };
+
+    const filterRender = useCallback((props) => {
+        const { data, onCheck, checkStatus, className } = props;
+        return (
+            <div 
+                key={data.value}
+                className={className}
+                style={{ justifyContent: 'start', padding: '8px 16px 8px 12px', boxSizing: 'border-box' }}
+            >
+                <Checkbox
+                    onChange={onCheck}
+                    indeterminate={checkStatus.halfChecked}
+                    checked={checkStatus.checked}
+                    style={{ marginRight: 8 }}
+                />
+                <Typography.Text
+                    ellipsis={{ showTooltip: { opts: { style: { wordBreak: 'break-all' } } } }}
+                    style={{ maxWidth: 260 }}
+                >
+                    {data.map(item => item.label).join(' | ')}
+                </Typography.Text>
+            </div>
+        );
+    }, []);
+     
+    return (
+        <Cascader
+            multiple
+            filterTreeNode
+            style={{ width: 320 }}
+            treeData={treeData}
+            placeholder="输入 通用 or 场景 进行搜索"
+            virtualizeInSearch={virtualize}
+            filterRender={filterRender}
+        />
+    );
+};
 ```
 
 ### 限制标签展示数量
@@ -1595,7 +1666,7 @@ interface TriggerRenderProps {
     disabled: boolean;
     /**
      * 已选中的 node 在 treeData 中的层级位置，如下例子，
-     * 当选中浙江省-杭州市-萧山区时，此处 value 为 '0-0-0'
+     * 当选中浙江省-杭州市-萧山区时，此处 value 为 '0-0-1'
      */
     value?: string | Set<string>;
     /* 当前 Input 框的输入值 */
@@ -1751,7 +1822,7 @@ function Demo() {
 | filterRender         | 自定义渲染筛选后的选项                                                                                                                                         | (props: FilterRenderProps) => ReactNode;                                                  | -                              | 2.28.0 |
 | filterSorter         | 对筛选后的选项进行排序                                                                                                                                         | (first: CascaderData, second: CascaderData, inputValue: string) => number                 | -                              | 2.28.0 |
 | filterTreeNode       | 设置筛选，默认用 treeNodeFilterProp 的值作为要筛选的 TreeNode 的属性值， data 参数自 v2.28.0 开始提供                                                                           | ((inputValue: string, treeNodeString: string, data?: CascaderData) => boolean) \| boolean | false                          | -      |
-| getPopupContainer    | 指定父级 DOM，下拉框将会渲染至该 DOM 中，自定义需要设置 position: relative                                                                                                 | () => HTMLElement                                                                         | () => document.body            | -      |
+| getPopupContainer    | 指定父级 DOM，下拉框将会渲染至该 DOM 中，自定义需要设置 position: relative   这会改变浮层 DOM 树位置，但不会改变视图渲染位置。                                                                                               | () => HTMLElement                                                                         | () => document.body            | -      |
 | insetLabel           | 前缀标签别名，主要用于 Form                                                                                                                                    | ReactNode                                                                                 | -                              | 0.28.0 |
 | leafOnly             | 多选时设置 value 只包含叶子节点，即显示的 Tag 和 onChange 的 value 参数只包含叶子节点。不支持动态切换                                                                                   | boolean                                                                                   | false                          | 2.2.0  |
 | loadData             | 异步加载数据，需要返回一个Promise                                                                                                                                | (selectOptions: CascaderData[]) => Promise< void >                                        | -                              | 1.8.0  |
@@ -1767,6 +1838,7 @@ function Demo() {
 | preventScroll        | 指示浏览器是否应滚动文档以显示新聚焦的元素，作用于组件内的 focus 方法                                                                                                              | boolean                                                                                   | -                              | 2.15.0 |
 | restTagsPopoverProps | Popover 的配置属性，可以控制 position、zIndex、trigger 等，具体参考[Popover](/zh-CN/show/popover#API%20%E5%8F%82%E8%80%83)                                            | PopoverProps                                                                              | {}                             | 1.28.0 |
 | searchPlaceholder    | 搜索框默认文字                                                                                                                                             | string                                                                                    | -                              | -      |
+| searchPosition | 设置搜索框的位置，可选: `trigger`、`custom` | string| `trigger` | 2.54.0 |
 | separator            | 自定义分隔符，包括：搜索时显示在下拉框的内容以及单选时回显到 Trigger 的内容的分隔符                                                                                                      | string                                                                                    | `/`                            | 2.2.0  |
 | showClear            | 是否展示清除按钮                                                                                                                                            | boolean                                                                                   | false                          | 0.35.0 |
 | showNext             | 设置展开 Dropdown 子菜单的方式，可选: `click`、`hover`                                                                                                            | string                                                                                    | `click`                        | 1.29.0 |
@@ -1782,6 +1854,7 @@ function Demo() {
 | triggerRender        | 自定义触发器渲染方法                                                                                                                                          | (props: TriggerRenderProps) => ReactNode                                                  | -                              | 0.34.0 |
 | validateStatus       | trigger 的校验状态，仅影响展示样式。可选: default、error、warning                                                                                                     | string                                                                                    | `default`                      | -      |
 | value                | （受控）选中的条目                                                                                                                                           | string\|number\|CascaderData\|(string\|number\|CascaderData)[]                            | -                              | -      |
+| virtualizeInSearch   | 搜索列表虚拟化，用于大量树节点的情况，由 height, width, itemSize 组成 | Object | - | - | - |
 | zIndex               | 下拉菜单的 zIndex                                                                                                                                        | number                                                                                    | 1030                           | -      |
 | enableLeafClick      | 多选时，是否启动点击叶子节点选项触发勾选                                                                                                                                | boolean                                                                                   | false                          | 2.2.0  |
 | onBlur               | 失焦 Cascader 的回调                                                                                                                                     | (e: MouseEvent) => void                                                                   | -                              | -      |
@@ -1815,6 +1888,9 @@ function Demo() {
 | ----------- | ----------------------------------- | ------- |
 | close       | 调用时可以手动关闭下拉列表          | v2.30.0 |
 | open        | 调用时可以手动展开下拉列表          | v2.30.0 |
+| focus       | 调用时可以手动聚焦                 | v2.34.0 |
+| blur        | 调用时可以手动失焦                 | v2.34.0 |
+| search(value: string) | 手动触发搜索，需同时设置 filterTreeNode 开启搜索，searchPosition 为 `custom` 自定义展示搜素框  | v2.54.0 |
 
 ## Accessibility
 

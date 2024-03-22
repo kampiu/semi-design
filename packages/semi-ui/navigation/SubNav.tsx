@@ -1,5 +1,3 @@
-/* eslint-disable max-len */
-/* eslint-disable no-nested-ternary */
 import BaseComponent, { BaseProps } from '../_base/baseComponent';
 import React from 'react';
 import PropTypes from 'prop-types';
@@ -71,7 +69,7 @@ export default class SubNav extends BaseComponent<SubNavProps, SubNavState> {
         /**
          * Icon name on the left
          */
-        icon: PropTypes.oneOfType([PropTypes.string, PropTypes.node]),
+        icon: PropTypes.node,
         /**
          * Maximum height (for animation)
          */

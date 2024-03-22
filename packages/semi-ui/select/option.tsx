@@ -1,4 +1,3 @@
-/* eslint-disable max-len */
 import React, { PureComponent } from 'react';
 import classNames from 'classnames';
 import PropTypes from 'prop-types';
@@ -88,7 +87,7 @@ class Option extends PureComponent<OptionProps> {
             prefixCls,
             renderOptionItem,
             inputValue,
-            id,
+            semiOptionId,
             ...rest
         } = this.props;
         const optionClassName = classNames(prefixCls, {
@@ -127,6 +126,7 @@ class Option extends PureComponent<OptionProps> {
                 inputValue,
                 onMouseEnter: (e: React.MouseEvent) => onMouseEnter(e),
                 onClick: (e: React.MouseEvent) => this.onClick({ value, label, children, ...rest }, e),
+                className,
                 ...rest
             });
         }
@@ -147,7 +147,7 @@ class Option extends PureComponent<OptionProps> {
                 }}
                 onMouseEnter={e => onMouseEnter && onMouseEnter(e)}
                 role="option"
-                id={id}
+                id={semiOptionId}
                 aria-selected={selected ? "true" : "false"}
                 aria-disabled={disabled ? "true" : "false"}
                 style={style}
